@@ -1,0 +1,433 @@
+{
+  "meta": {
+    "title": "Guide de Musculation Débutant",
+    "subtitle": "Programme Split 4 jours/semaine",
+    "sessionDuration": 40,
+    "defaultSets": 3,
+    "defaultReps": 12,
+    "defaultRestSeconds": 75,
+    "defaultExerciseSeconds": 45,
+    "warmupMinutes": 5,
+    "stretchMinutes": 5,
+    "caloriesPerMinute": 6.5,
+    "instructions": [
+      "Échauffement : 5 minutes de vélo ou tapis.",
+      "Réalisez les exercices dans l'ordre.",
+      "Repos : 60 à 90 secondes entre les séries.",
+      "Choisissez une charge permettant de finir toutes les répétitions avec une bonne technique.",
+      "Étirements : 5 minutes en fin de séance."
+    ],
+    "progressionTips": [
+      "Augmentez les charges progressivement.",
+      "Dormez 7 à 9 heures.",
+      "Hydratez-vous avant, pendant et après l'entraînement.",
+      "Consommez suffisamment de protéines pour favoriser la récupération.",
+      "Notez vos charges après chaque séance."
+    ]
+  },
+  "quotes": [
+    "La discipline bat la motivation.",
+    "Chaque répétition compte.",
+    "Progresser un peu chaque jour.",
+    "Ton futur toi te remerciera.",
+    "La constance crée la force.",
+    "Reste concentré, reste régulier.",
+    "Le repos fait partie de l'entraînement."
+  ],
+  "days": [
+    {
+      "id": "lundi",
+      "name": "Lundi",
+      "focus": "Dos & Abdominaux",
+      "duration": 40,
+      "color": "#3DDC97",
+      "exercises": [
+        {
+          "id": "lat-pulldown",
+          "name": "Tirage vertical (Lat Pulldown)",
+          "image": "images/lat-pulldown.png",
+          "muscles": [
+            "Grand dorsal",
+            "Biceps"
+          ],
+          "description": "Exercice de tirage pour développer le dos et les bras.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "seated-row",
+          "name": "Rowing assis",
+          "image": "images/seated-row.png",
+          "muscles": [
+            "Dos",
+            "Arrière des épaules"
+          ],
+          "description": "Tirage horizontal pour densifier le milieu du dos.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "seated-row-horizontal",
+          "name": "Tirage horizontal machine",
+          "image": "images/seated-row-horizontal.png",
+          "muscles": [
+            "Milieu du dos"
+          ],
+          "description": "Travail ciblé du milieu du dos en tirage contrôlé.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "pullover",
+          "name": "Pull-over machine",
+          "image": "images/pullover.png",
+          "muscles": [
+            "Grand dorsal"
+          ],
+          "description": "Étire et renforce le grand dorsal.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "crunch-machine-mon",
+          "name": "Crunch machine",
+          "image": "images/crunch-machine.png",
+          "muscles": [
+            "Abdominaux"
+          ],
+          "description": "Renforcement des abdominaux sur machine guidée.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "plank-mon",
+          "name": "Gainage",
+          "image": "images/plank.png",
+          "muscles": [
+            "Sangle abdominale"
+          ],
+          "description": "Maintien isométrique pour stabiliser le tronc.",
+          "howTo": "Corps aligné, gainé, regard vers le sol. Maintenez la position sans creuser le dos.",
+          "breathing": "Respirez calmement et régulièrement pendant le maintien.",
+          "mistakes": "Fesses trop hautes, dos creusé, apnée.",
+          "sets": 3,
+          "reps": 1,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
+          "isHold": true
+        }
+      ]
+    },
+    {
+      "id": "mardi",
+      "name": "Mardi",
+      "focus": "Épaules & Triceps",
+      "duration": 40,
+      "color": "#4DA3FF",
+      "exercises": [
+        {
+          "id": "shoulder-press",
+          "name": "Développé épaules machine",
+          "image": "images/shoulder-press.png",
+          "muscles": [
+            "Épaules"
+          ],
+          "description": "Développé guidé pour renforcer les deltoïdes.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "lateral-raise",
+          "name": "Élévations latérales machine",
+          "image": "images/lateral-raise.png",
+          "muscles": [
+            "Épaules"
+          ],
+          "description": "Isolation du deltoïde moyen.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "reverse-fly",
+          "name": "Oiseau machine",
+          "image": "images/reverse-fly.png",
+          "muscles": [
+            "Arrière des épaules"
+          ],
+          "description": "Renforce l'arrière des épaules et la posture.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "triceps-pushdown",
+          "name": "Extension triceps poulie",
+          "image": "images/triceps-pushdown.png",
+          "muscles": [
+            "Triceps"
+          ],
+          "description": "Isolation des triceps à la poulie.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "dips",
+          "name": "Dips machine",
+          "image": "images/dips.png",
+          "muscles": [
+            "Triceps",
+            "Pectoraux"
+          ],
+          "description": "Polyarticulaire pour triceps et bas des pectoraux.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        }
+      ]
+    },
+    {
+      "id": "jeudi",
+      "name": "Jeudi",
+      "focus": "Jambes",
+      "duration": 40,
+      "color": "#FF8A4C",
+      "exercises": [
+        {
+          "id": "leg-press",
+          "name": "Presse à cuisses",
+          "image": "images/leg-press.png",
+          "muscles": [
+            "Quadriceps",
+            "Fessiers"
+          ],
+          "description": "Mouvement de base pour développer les jambes.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "leg-extension",
+          "name": "Leg Extension",
+          "image": "images/leg-extension.png",
+          "muscles": [
+            "Quadriceps"
+          ],
+          "description": "Isolation des quadriceps.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "leg-curl",
+          "name": "Leg Curl",
+          "image": "images/leg-curl.png",
+          "muscles": [
+            "Ischio-jambiers"
+          ],
+          "description": "Renforcement de l'arrière des cuisses.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "seated-calf",
+          "name": "Mollets assis",
+          "image": "images/seated-calf.png",
+          "muscles": [
+            "Mollets"
+          ],
+          "description": "Travail des mollets en position assise.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "crunch-machine-thu",
+          "name": "Crunch machine",
+          "image": "images/crunch-machine.png",
+          "muscles": [
+            "Abdominaux"
+          ],
+          "description": "Renforcement des abdominaux sur machine guidée.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "plank-thu",
+          "name": "Gainage",
+          "image": "images/plank.png",
+          "muscles": [
+            "Sangle abdominale"
+          ],
+          "description": "Maintien isométrique pour stabiliser le tronc.",
+          "howTo": "Corps aligné, gainé, regard vers le sol. Maintenez la position sans creuser le dos.",
+          "breathing": "Respirez calmement et régulièrement pendant le maintien.",
+          "mistakes": "Fesses trop hautes, dos creusé, apnée.",
+          "sets": 3,
+          "reps": 1,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
+          "isHold": true
+        }
+      ]
+    },
+    {
+      "id": "vendredi",
+      "name": "Vendredi",
+      "focus": "Pectoraux & Biceps",
+      "duration": 40,
+      "color": "#FF5C7A",
+      "exercises": [
+        {
+          "id": "chest-press",
+          "name": "Chest Press",
+          "image": "images/chest-press.png",
+          "muscles": [
+            "Pectoraux"
+          ],
+          "description": "Développé couché guidé pour les pectoraux.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "pec-deck",
+          "name": "Pec Deck",
+          "image": "images/pec-deck.png",
+          "muscles": [
+            "Pectoraux"
+          ],
+          "description": "Isolation des pectoraux en écarté machine.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "incline-press",
+          "name": "Développé incliné machine",
+          "image": "images/incline-press.png",
+          "muscles": [
+            "Haut des pectoraux"
+          ],
+          "description": "Cible le haut des pectoraux.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "biceps-curl",
+          "name": "Curl biceps machine",
+          "image": "images/biceps-curl.png",
+          "muscles": [
+            "Biceps"
+          ],
+          "description": "Curl guidé pour isoler les biceps.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        },
+        {
+          "id": "cable-curl",
+          "name": "Curl poulie",
+          "image": "images/cable-curl.png",
+          "muscles": [
+            "Biceps"
+          ],
+          "description": "Curl à la poulie pour un travail continu des biceps.",
+          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "breathing": "Expirez pendant l'effort, inspirez au retour.",
+          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "sets": 3,
+          "reps": 12,
+          "tempsExercice": 45,
+          "tempsRepos": 75
+        }
+      ]
+    }
+  ]
+}

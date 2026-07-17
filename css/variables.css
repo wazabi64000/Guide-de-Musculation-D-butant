@@ -1,0 +1,54 @@
+:root {
+  --bg: #0b1220;
+  --bg-elevated: #121a2b;
+  --bg-card: #162235;
+  --bg-card-hover: #1b2940;
+  --bg-muted: #1e2d45;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f0f4f8;
+  --text-muted: #9aadbf;
+  --text-dim: #6d8096;
+  --accent: #3ddc97;
+  --accent-soft: rgba(61, 220, 151, 0.16);
+  --accent-strong: #2bbf7f;
+  --danger: #ff5c7a;
+  --warning: #ff8a4c;
+  --info: #4da3ff;
+  --success: #3ddc97;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 28px;
+  --nav-height: 72px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font-display: "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+  --font-body: "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --touch: 52px;
+  --progress-track: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] {
+  --bg: #f3f6fa;
+  --bg-elevated: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f7fafc;
+  --bg-muted: #e8eef5;
+  --border: rgba(15, 23, 42, 0.08);
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #64748b;
+  --accent: #0f9f6e;
+  --accent-soft: rgba(15, 159, 110, 0.12);
+  --accent-strong: #0b7d56;
+  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.06);
+  --progress-track: rgba(15, 23, 42, 0.08);
+}

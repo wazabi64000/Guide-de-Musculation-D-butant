@@ -1,0 +1,67 @@
+@media (min-width: 640px) {
+  .app-shell {
+    padding: 1.5rem;
+  }
+
+  .grid-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .day-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .session-actions {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  body {
+    padding-bottom: 1.5rem;
+  }
+
+  .bottom-nav {
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(720px, calc(100% - 2rem));
+    bottom: 1rem;
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    height: var(--nav-height);
+    padding-bottom: 0.5rem;
+  }
+
+  .exercise-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .session-overlay {
+    inset: 1.5rem;
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 1100px) {
+  .app-shell {
+    width: min(1100px, 100%);
+  }
+}
+
+@media (max-width: 380px) {
+  .greeting {
+    font-size: 1.55rem;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .nav-item {
+    font-size: 0.62rem;
+  }
+}

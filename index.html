@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B1220" />
+  <meta name="description" content="Guide de musculation débutant — suivi de séances, timer et statistiques." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Muscu Débutant</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <div>
+          <div class="brand-title">Muscu Débutant</div>
+          <div class="brand-sub">Split 4 jours</div>
+        </div>
+      </div>
+    </header>
+
+    <h1 class="greeting fade-in" id="greeting">Bonjour</h1>
+    <p class="quote fade-in" id="quote">Chargement…</p>
+
+    <section class="grid-stats fade-in" aria-label="Résumé">
+      <article class="stat-card">
+        <div class="stat-label">Séances</div>
+        <div class="stat-value" id="stat-sessions">0</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Temps total</div>
+        <div class="stat-value" id="stat-time">0 min</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Calories</div>
+        <div class="stat-value" id="stat-calories">0 kcal</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Progression</div>
+        <div class="stat-value" id="stat-progress">0%</div>
+      </article>
+    </section>
+
+    <section class="card fade-in">
+      <h2 class="card-title">Programme</h2>
+      <p class="card-text" id="program-label">Guide de Musculation Débutant</p>
+      <p class="card-text" id="program-sub" style="margin-top:0.35rem">Séance du jour</p>
+      <div class="progress-bar" style="margin:1rem 0">
+        <div class="progress-fill" id="home-progress-fill"></div>
+      </div>
+      <button class="btn btn-primary" type="button" id="btn-start">Commencer</button>
+      <button class="btn btn-secondary" type="button" id="btn-open-program" style="width:100%;margin-top:0.75rem">Voir le programme</button>
+    </section>
+
+    <section class="card fade-in">
+      <h2 class="card-title">Dernière séance</h2>
+      <p class="card-text" id="last-session">Aucune séance pour le moment</p>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js?v=7"></script>
+</body>
+</html>

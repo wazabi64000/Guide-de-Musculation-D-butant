@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B1220" />
+  <title>Paramètres — Muscu Débutant</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <div>
+          <div class="brand-title">Paramètres</div>
+          <div class="brand-sub">Préférences</div>
+        </div>
+      </div>
+    </header>
+
+    <h1 class="greeting">Paramètres</h1>
+    <p class="quote">Thème, musique et timers.</p>
+
+    <section class="settings-card">
+      <div class="settings-row">
+        <span>Mode sombre</span>
+        <button class="toggle on" type="button" id="toggle-theme" aria-pressed="true" aria-label="Basculer le thème"></button>
+      </div>
+      <div class="settings-row">
+        <span>Musique</span>
+        <button class="toggle on" type="button" id="toggle-music" aria-pressed="true" aria-label="Activer la musique"></button>
+      </div>
+      <div class="settings-row">
+        <span>Muet</span>
+        <button class="toggle" type="button" id="toggle-mute" aria-pressed="false" aria-label="Couper le son"></button>
+      </div>
+      <div class="settings-row">
+        <span>Notifications</span>
+        <button class="toggle on" type="button" id="toggle-notifications" aria-pressed="true" aria-label="Activer les notifications"></button>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="field" style="margin-bottom:1rem">
+        <label for="input-name">Prénom</label>
+        <input id="input-name" type="text" placeholder="Ton prénom" autocomplete="nickname" />
+      </div>
+      <div class="field" style="margin-bottom:1rem">
+        <label for="range-volume">Volume musique</label>
+        <input id="range-volume" type="range" min="0" max="1" step="0.05" value="0.55" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="input-exercise">Temps exercice (s)</label>
+          <input id="input-exercise" type="number" min="15" max="180" step="5" value="45" />
+        </div>
+        <div class="field">
+          <label for="input-rest">Temps repos (s)</label>
+          <input id="input-rest" type="number" min="20" max="180" step="5" value="75" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Données</h2>
+      <p class="card-text" style="margin-bottom:1rem">La sauvegarde est automatique via IndexedDB.</p>
+      <button class="btn btn-danger" type="button" id="btn-reset-data" style="width:100%">Réinitialiser les données</button>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Installation</h2>
+      <p class="card-text">Sur mobile : menu du navigateur → « Ajouter à l'écran d'accueil ». L'app fonctionne hors ligne.</p>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js?v=7"></script>
+</body>
+</html>
