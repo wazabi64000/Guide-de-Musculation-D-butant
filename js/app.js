@@ -506,6 +506,8 @@ function createSessionController(day, startIndex = 0) {
       setDoneBtn.classList.remove('hidden');
       setDoneBtn.textContent = 'Série terminée → Repos';
     }
+    // Reprend l'exercice après le countdown (le repos a pu être coupé)
+    await music.stop();
     await music.play('exercise', { loop: true });
     timer.start(workSeconds(exercise));
     updateRemaining(workSeconds(exercise));
@@ -547,6 +549,8 @@ function createSessionController(day, startIndex = 0) {
 
     updateProgress();
 
+    // Coupe l'exercice avant le repos pour éviter le chevauchement
+    await music.stop();
     await music.play('rest', { loop: true });
     const ok = await runCountdown(label);
     if (!ok) {

@@ -6,14 +6,27 @@ const TRACKS = {
   finish: 'music/finish.mp3'
 };
 
+function makeAudio(src) {
+  const audio = new Audio();
+  audio.preload = 'auto';
+  audio.playsInline = true;
+  audio.loop = true;
+  audio.src = src;
+  return audio;
+}
+
 class MusicPlayer {
   constructor() {
-    this.audio = new Audio();
-    this.audio.preload = 'auto';
-    this.audio.playsInline = true;
+    /** @type {Record<string, HTMLAudioElement>} */
+    this.players = {
+      exercise: makeAudio(TRACKS.exercise),
+      rest: makeAudio(TRACKS.rest),
+      finish: makeAudio(TRACKS.finish)
+    };
     this.currentKey = null;
     this.unlocked = false;
     this.duckLevel = 1;
+    this.playToken = 0;
   }
 
   isEnabled() {
@@ -28,22 +41,38 @@ class MusicPlayer {
     return Math.min(1, Math.max(0, base * this.duckLevel));
   }
 
-  applyVolume() {
-    this.audio.muted = false;
-    this.audio.volume = this.targetVolume();
+  applyVolume(key = this.currentKey) {
+    const audio = key ? this.players[key] : null;
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = this.targetVolume();
+  }
+
+  /** Hard-stop every track so nothing can overlap. */
+  stopAll() {
+    Object.entries(this.players).forEach(([key, audio]) => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch {
+        /* ignore */
+      }
+      if (key === 'finish') audio.loop = false;
+      else audio.loop = true;
+    });
+    this.currentKey = null;
   }
 
   async unlock() {
     if (this.unlocked) return true;
     try {
-      this.audio.src = TRACKS.exercise;
-      this.audio.loop = true;
-      this.audio.volume = 0.001;
-      await this.audio.play();
-      this.audio.pause();
-      this.audio.currentTime = 0;
+      const audio = this.players.exercise;
+      audio.volume = 0.001;
+      audio.loop = true;
+      await audio.play();
+      audio.pause();
+      audio.currentTime = 0;
       this.unlocked = true;
-      this.applyVolume();
       return true;
     } catch (error) {
       console.warn('Music unlock:', error);
@@ -54,35 +83,58 @@ class MusicPlayer {
 
   /** Lower volume during countdown beeps */
   duck(on) {
-    this.duckLevel = on ? 0.2 : 1;
-    if (!this.audio.paused) this.applyVolume();
+    this.duckLevel = on ? 0.18 : 1;
+    if (this.currentKey && this.players[this.currentKey] && !this.players[this.currentKey].paused) {
+      this.applyVolume(this.currentKey);
+    }
   }
 
   async play(key, { loop = true } = {}) {
-    if (!this.isEnabled() || !TRACKS[key]) return false;
-    await this.unlock();
+    if (!this.isEnabled() || !this.players[key]) return false;
 
-    const same = this.currentKey === key && this.audio.src.includes(`${key}.mp3`);
-    if (same && !this.audio.paused) {
+    const token = ++this.playToken;
+    await this.unlock();
+    if (token !== this.playToken) return false;
+
+    const audio = this.players[key];
+
+    // Same track already playing — just restore volume
+    if (this.currentKey === key && !audio.paused) {
       this.duck(false);
-      this.applyVolume();
+      this.applyVolume(key);
       return true;
     }
 
+    // Stop every other track first (prevents exercise + rest overlap)
+    Object.entries(this.players).forEach(([k, el]) => {
+      if (k === key) return;
+      try {
+        el.pause();
+        el.currentTime = 0;
+      } catch {
+        /* ignore */
+      }
+    });
+
+    if (token !== this.playToken) return false;
+
     this.currentKey = key;
-    this.audio.loop = Boolean(loop);
-    this.audio.src = TRACKS[key];
+    audio.loop = Boolean(loop);
+    this.duck(false);
+    this.applyVolume(key);
 
     try {
-      this.audio.currentTime = 0;
+      if (audio.currentTime > 0.05) audio.currentTime = 0;
     } catch {
       /* ignore */
     }
 
     try {
-      this.duck(false);
-      this.applyVolume();
-      await this.audio.play();
+      await audio.play();
+      if (token !== this.playToken) {
+        audio.pause();
+        return false;
+      }
       return true;
     } catch (error) {
       console.warn('Music play failed:', key, error);
@@ -91,27 +143,26 @@ class MusicPlayer {
   }
 
   async stop() {
+    this.playToken += 1;
     this.duck(false);
-    this.audio.pause();
-    try {
-      this.audio.currentTime = 0;
-    } catch {
-      /* ignore */
-    }
-    this.currentKey = null;
+    this.stopAll();
   }
 
   setMuted(muted) {
-    this.audio.muted = Boolean(muted);
-    if (!muted) this.applyVolume();
+    const m = Boolean(muted);
+    Object.values(this.players).forEach((audio) => {
+      audio.muted = m;
+    });
+    if (!m && this.currentKey) this.applyVolume(this.currentKey);
   }
 
   setVolume() {
-    this.applyVolume();
+    if (this.currentKey) this.applyVolume(this.currentKey);
   }
 
   isPlaying() {
-    return !this.audio.paused;
+    const audio = this.currentKey ? this.players[this.currentKey] : null;
+    return Boolean(audio && !audio.paused);
   }
 }
 
