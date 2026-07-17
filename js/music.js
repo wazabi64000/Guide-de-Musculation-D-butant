@@ -11,68 +11,81 @@ class MusicPlayer {
   constructor() {
     this.audio = new Audio();
     this.audio.preload = 'auto';
+    this.audio.playsInline = true;
     this.currentKey = null;
     this.fadeTimer = null;
     this.unlocked = false;
-    this.available = {};
-
-    Object.entries(TRACKS).forEach(([key, src]) => {
-      this.probe(key, src);
-    });
-
-    this.audio.addEventListener('ended', () => {
-      if (this.currentKey === 'exercise' || this.currentKey === 'rest') {
-        this.audio.currentTime = 0;
-        this.audio.play().catch(() => {});
-      }
-    });
-  }
-
-  probe(key, src) {
-    const test = new Audio();
-    test.preload = 'metadata';
-    test.src = src;
-    test.addEventListener('canplaythrough', () => {
-      this.available[key] = true;
-    });
-    test.addEventListener('error', () => {
-      this.available[key] = false;
-    });
-  }
-
-  unlock() {
-    if (this.unlocked) return Promise.resolve();
-    this.unlocked = true;
-    this.audio.volume = 0;
-    const playAttempt = this.audio.play().then(() => {
-      this.audio.pause();
-      this.audio.currentTime = 0;
-      this.applyVolume();
-    }).catch(() => {
-      this.applyVolume();
-    });
-    // Never block the UI if autoplay hangs
-    return Promise.race([
-      playAttempt,
-      new Promise((resolve) => setTimeout(resolve, 400))
-    ]);
+    this.playToken = 0;
   }
 
   isEnabled() {
-    return getCachedSetting('musicEnabled') && !getCachedSetting('musicMuted');
+    // Default ON if settings not loaded yet
+    const enabled = getCachedSetting('musicEnabled');
+    const muted = getCachedSetting('musicMuted');
+    if (enabled === false) return false;
+    if (muted === true) return false;
+    return true;
   }
 
-  applyVolume(target = null) {
-    const volume = target ?? Number(getCachedSetting('musicVolume') ?? 0.55);
+  targetVolume() {
+    const v = Number(getCachedSetting('musicVolume'));
+    return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.6;
+  }
+
+  applyVolume(volume = this.targetVolume()) {
+    this.audio.muted = false;
     this.audio.volume = Math.min(1, Math.max(0, volume));
   }
 
-  async fadeTo(volume, duration = 400) {
+  /**
+   * Must be called from a user gesture (click).
+   * Preloads exercise track so later plays are allowed.
+   */
+  async unlock() {
+    if (this.unlocked && !this.audio.paused) {
+      return true;
+    }
+
+    try {
+      // Prime with the exercise track under the user gesture
+      if (!this.audio.src || !this.audio.src.includes('exercise.mp3')) {
+        this.audio.src = TRACKS.exercise;
+        this.currentKey = 'exercise';
+      }
+      this.audio.loop = true;
+      this.audio.volume = 0.001;
+      await this.audio.play();
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.applyVolume();
+      this.unlocked = true;
+      return true;
+    } catch (error) {
+      console.warn('Music unlock failed:', error);
+      this.unlocked = true; // still allow later attempts
+      this.applyVolume();
+      return false;
+    }
+  }
+
+  clearFade() {
+    if (this.fadeTimer) {
+      clearInterval(this.fadeTimer);
+      this.fadeTimer = null;
+    }
+  }
+
+  fadeTo(volume, duration = 350) {
+    this.clearFade();
     const start = this.audio.volume;
     const end = Math.min(1, Math.max(0, volume));
-    const steps = 12;
+    if (duration <= 0) {
+      this.audio.volume = end;
+      return Promise.resolve();
+    }
+
+    const steps = 10;
     const stepTime = duration / steps;
-    clearInterval(this.fadeTimer);
 
     return new Promise((resolve) => {
       let i = 0;
@@ -81,7 +94,7 @@ class MusicPlayer {
         const t = i / steps;
         this.audio.volume = start + (end - start) * t;
         if (i >= steps) {
-          clearInterval(this.fadeTimer);
+          this.clearFade();
           this.audio.volume = end;
           resolve();
         }
@@ -89,45 +102,87 @@ class MusicPlayer {
     });
   }
 
-  async play(key, { loop = false, fade = true } = {}) {
-    if (!this.isEnabled()) return;
-    if (this.available[key] === false) return;
-    if (!TRACKS[key]) return;
+  async play(key, { loop = true, fade = true } = {}) {
+    if (!this.isEnabled()) {
+      console.info('Music disabled in settings');
+      return false;
+    }
+    if (!TRACKS[key]) return false;
 
+    const token = ++this.playToken;
     await this.unlock();
+    if (token !== this.playToken) return false;
 
+    // Already playing this track
     if (this.currentKey === key && !this.audio.paused) {
       this.applyVolume();
-      return;
+      return true;
     }
 
-    if (fade && !this.audio.paused) {
-      await this.fadeTo(0, 250);
-    }
-
+    this.clearFade();
     this.currentKey = key;
-    this.audio.loop = loop;
-    this.audio.src = TRACKS[key];
+    this.audio.loop = Boolean(loop);
+
+    const nextSrc = TRACKS[key];
+    const absolute = new URL(nextSrc, window.location.href).href;
+    if (this.audio.src !== absolute) {
+      this.audio.src = nextSrc;
+    }
 
     try {
       this.audio.currentTime = 0;
-      if (fade) this.audio.volume = 0;
-      else this.applyVolume();
-      await this.audio.play();
-      if (fade) {
-        const target = Number(getCachedSetting('musicVolume') ?? 0.55);
-        await this.fadeTo(target, 450);
-      }
     } catch {
-      // Missing file or autoplay restriction: continue silently
+      /* ignore seek errors while loading */
+    }
+
+    try {
+      if (fade) this.audio.volume = 0.001;
+      else this.applyVolume();
+
+      await this.audio.play();
+
+      if (token !== this.playToken) return false;
+
+      if (fade) {
+        await this.fadeTo(this.targetVolume(), 400);
+      } else {
+        this.applyVolume();
+      }
+
+      // Safety: never leave silent
+      if (this.audio.volume < 0.05 && this.isEnabled()) {
+        this.applyVolume();
+      }
+
+      return true;
+    } catch (error) {
+      console.warn('Music play failed:', key, error);
+      // Retry once without fade
+      try {
+        this.applyVolume();
+        await this.audio.play();
+        return true;
+      } catch (retryError) {
+        console.warn('Music retry failed:', retryError);
+        return false;
+      }
     }
   }
 
-  async stop({ fade = true } = {}) {
-    if (this.audio.paused) return;
-    if (fade) await this.fadeTo(0, 300);
+  async stop({ fade = false } = {}) {
+    this.playToken += 1;
+    this.clearFade();
+    if (this.audio.paused) {
+      this.currentKey = null;
+      return;
+    }
+    if (fade) await this.fadeTo(0, 200);
     this.audio.pause();
-    this.audio.currentTime = 0;
+    try {
+      this.audio.currentTime = 0;
+    } catch {
+      /* ignore */
+    }
     this.currentKey = null;
     this.applyVolume();
   }
@@ -139,6 +194,10 @@ class MusicPlayer {
 
   setVolume(volume) {
     this.applyVolume(volume);
+  }
+
+  isPlaying() {
+    return !this.audio.paused;
   }
 }
 

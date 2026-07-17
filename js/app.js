@@ -172,9 +172,13 @@ function openDayView(day) {
         className: 'btn btn-primary',
         type: 'button',
         text: 'Commencer la séance',
-        onClick: () => {
-          music.unlock().catch(() => {});
-          unlockBeeps().catch(() => {});
+        onClick: async () => {
+          try {
+            await music.unlock();
+            await unlockBeeps();
+          } catch {
+            /* continue */
+          }
           startSession(day);
         }
       })
@@ -237,9 +241,13 @@ function renderExerciseCard(day, exercise, index) {
         className: 'btn btn-primary',
         type: 'button',
         text: 'Démarrer',
-        onClick: () => {
-          music.unlock().catch(() => {});
-          unlockBeeps().catch(() => {});
+        onClick: async () => {
+          try {
+            await music.unlock();
+            await unlockBeeps();
+          } catch {
+            /* continue */
+          }
           startSession(day, index);
         }
       }),
@@ -486,7 +494,8 @@ function createSessionController(day, startIndex = 0) {
       setDoneBtn.classList.remove('hidden');
       setDoneBtn.textContent = 'Série terminée → Repos';
     }
-    void music.play('exercise', { loop: true, fade: true });
+    // Await play so autoplay/volume issues surface; force audible volume
+    await music.play('exercise', { loop: true, fade: false });
     timer.start(workSeconds(exercise));
     updateRemaining(workSeconds(exercise));
   }
@@ -514,7 +523,7 @@ function createSessionController(day, startIndex = 0) {
     subEl.textContent = label;
     ring.classList.add('rest');
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
-    void music.play('rest', { loop: true, fade: true });
+    await music.play('rest', { loop: true, fade: false });
     timer.start(rest);
     updateRemaining(rest);
   }
@@ -677,13 +686,18 @@ function createSessionController(day, startIndex = 0) {
         setSessionBackground(exercise);
       }
 
-      // Audio en arrière-plan
-      void Promise.all([music.unlock(), unlockBeeps()]);
-      void enterFullscreen(overlay);
-
       mode = 'work';
       setIndex = 1;
-      void startWork();
+
+      // Unlock + start music as soon as session opens (still in click stack if sync enough)
+      void (async () => {
+        await music.unlock();
+        await unlockBeeps();
+        // Start exercise music during first countdown so audio keeps playing
+        await music.play('exercise', { loop: true, fade: false });
+        void enterFullscreen(overlay);
+        void startWork();
+      })();
     },
     destroy() {
       destroyed = true;
@@ -699,20 +713,40 @@ function createSessionController(day, startIndex = 0) {
 
 function setSessionBackground(exercise) {
   const bg = $('#session-bg');
-  if (!bg) return;
+  const panelImg = $('#session-exercise-img');
   const path = String(exercise?.image || '').replace(/^\//, '');
-  if (!path) {
-    bg.style.backgroundImage = 'none';
-    return;
+  const url = path ? `${path}?v=9` : '';
+
+  if (bg) {
+    if (!url) {
+      bg.style.backgroundImage = 'none';
+    } else {
+      const preload = new Image();
+      preload.onload = () => {
+        bg.style.backgroundImage = `url("${url}")`;
+      };
+      preload.onerror = () => {
+        bg.style.backgroundImage = 'none';
+      };
+      preload.src = url;
+    }
   }
-  const img = new Image();
-  img.onload = () => {
-    bg.style.backgroundImage = `url("${path}")`;
-  };
-  img.onerror = () => {
-    bg.style.backgroundImage = 'none';
-  };
-  img.src = path;
+
+  if (panelImg) {
+    if (!url) {
+      panelImg.removeAttribute('src');
+      panelImg.alt = 'Image manquante';
+    } else {
+      panelImg.alt = exercise?.name || 'Exercice';
+      panelImg.src = url;
+      panelImg.onerror = () => {
+        panelImg.style.opacity = '0.3';
+      };
+      panelImg.onload = () => {
+        panelImg.style.opacity = '1';
+      };
+    }
+  }
 }
 
 function ensureSessionOverlay() {
@@ -733,6 +767,9 @@ function ensureSessionOverlay() {
         <strong id="session-exercise-name">Exercice</strong>
       </div>
       <button class="btn btn-ghost" type="button" id="btn-close-session" aria-label="Fermer">✕</button>
+    </div>
+    <div class="session-image-panel">
+      <img id="session-exercise-img" alt="Illustration de l'exercice" width="1200" height="750" />
     </div>
     <div class="session-main">
       <div class="timer-wrap">

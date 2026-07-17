@@ -77,8 +77,11 @@ export function createImageWithFallback(src, alt) {
   const img = document.createElement('img');
   img.alt = alt || '';
   img.decoding = 'async';
-  // Mount immediately — do not wait for onload (fixes cached-image race)
-  img.src = path;
+  img.loading = 'lazy';
+  img.width = 1200;
+  img.height = 750;
+  img.sizes = '(max-width: 639px) 100vw, (max-width: 1099px) 50vw, 520px';
+  img.src = `${path}?v=8`;
   img.addEventListener('error', () => {
     img.remove();
     if (!wrap.querySelector('.fallback')) {

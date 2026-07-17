@@ -1,3 +1,56 @@
+/* Mobile first — images & layout */
+
+@media (max-width: 639px) {
+  .exercise-media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .exercise-media img {
+    padding: 0.25rem;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .session-image-panel,
+  .session-image-panel img {
+    max-height: 34vh;
+    min-height: 140px;
+  }
+
+  .session-bg {
+    background-size: cover;
+    background-position: center top;
+  }
+
+  .session-main {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .timer-wrap {
+    width: min(220px, 68vw);
+  }
+
+  .timer-time {
+    font-size: clamp(2.2rem, 10vw, 3rem);
+  }
+
+  .session-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .session-footer .session-actions {
+    gap: 0.5rem;
+  }
+
+  .session-footer .btn {
+    min-height: 48px;
+    padding: 0.7rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
+
 @media (min-width: 640px) {
   .app-shell {
     padding: 1.5rem;
@@ -11,8 +64,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .exercise-media {
+    aspect-ratio: 16 / 10;
+  }
+
   .session-actions {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .session-bg {
+    background-size: contain;
   }
 }
 
@@ -37,6 +98,11 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .exercise-media {
+    aspect-ratio: 16 / 10;
+    min-height: 220px;
+  }
+
   .session-overlay {
     inset: 1.5rem;
     border-radius: 28px;
@@ -44,11 +110,21 @@
     box-shadow: var(--shadow);
     overflow: hidden;
   }
+
+  .session-bg {
+    background-size: cover;
+    background-position: center;
+  }
 }
 
 @media (min-width: 1100px) {
   .app-shell {
     width: min(1100px, 100%);
+  }
+
+  .exercise-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
   }
 }
 
@@ -63,5 +139,20 @@
 
   .nav-item {
     font-size: 0.62rem;
+  }
+
+  .exercise-name {
+    font-size: 1.05rem;
+  }
+}
+
+/* Prefer reduced data / tall phones */
+@media (max-height: 700px) and (orientation: landscape) {
+  .timer-wrap {
+    width: min(220px, 40vw);
+  }
+
+  .session-progress-block {
+    margin-top: 0.75rem;
   }
 }
