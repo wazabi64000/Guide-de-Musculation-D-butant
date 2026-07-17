@@ -36,7 +36,7 @@ export function bindSettingsPage(root = document) {
     const next = !getSettings().musicEnabled;
     await updateSetting('musicEnabled', next);
     syncToggle(musicToggle, next);
-    if (!next) music.stop({ fade: true });
+    if (!next) music.stop();
   });
 
   muteToggle?.addEventListener('click', async () => {
@@ -60,7 +60,7 @@ export function bindSettingsPage(root = document) {
   });
 
   rest?.addEventListener('change', async () => {
-    await updateSetting('defaultRestSeconds', Number(rest.value) || 75);
+    await updateSetting('defaultRestSeconds', Number(rest.value) || 90);
   });
 
   exercise?.addEventListener('change', async () => {

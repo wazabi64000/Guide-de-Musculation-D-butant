@@ -37,6 +37,16 @@ export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
 }
 
+/** Format seconds as 1 min, 1 min 30, 2 min 30, etc. */
+export function formatRestLabel(seconds) {
+  const s = Math.max(0, Math.round(Number(seconds) || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  if (m === 0) return `${r}s`;
+  if (r === 0) return `${m} min`;
+  return `${m} min ${String(r).padStart(2, '0')}`;
+}
+
 export function greetingForNow() {
   const hour = new Date().getHours();
   if (hour < 12) return 'Bonjour';

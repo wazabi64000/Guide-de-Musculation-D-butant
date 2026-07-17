@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muscu-debutant-v10';
+const CACHE_NAME = 'muscu-debutant-v12';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -22,6 +22,7 @@ const CORE_ASSETS = [
   './js/program.js',
   './js/stats.js',
   './js/settings.js',
+  './js/wake.js',
   './data/program.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

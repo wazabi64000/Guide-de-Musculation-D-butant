@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css?v=10" />
+  <link rel="stylesheet" href="css/style.css?v=11" />
   <link rel="stylesheet" href="css/animations.css" />
   <link rel="stylesheet" href="css/responsive.css?v=10" />
 </head>
@@ -61,8 +61,9 @@
           <input id="input-exercise" type="number" min="15" max="180" step="5" value="45" />
         </div>
         <div class="field">
-          <label for="input-rest">Temps repos (s)</label>
-          <input id="input-rest" type="number" min="20" max="180" step="5" value="75" />
+          <label for="input-rest">Repos de secours (s)</label>
+          <input id="input-rest" type="number" min="45" max="180" step="15" value="90" />
+          <p class="card-text" style="margin-top:0.4rem;font-size:0.8rem;opacity:0.75">Utilisé seulement si un exercice n’a pas de repos défini. Sinon : 2 min 30 / 2 min / 1 min 15 / 1 min selon l’exercice.</p>
         </div>
       </div>
     </section>
@@ -79,6 +80,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=10"></script>
+  <script type="module" src="js/app.js?v=15"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ import { buildNav, getQueryParam, navigate, currentPage } from './router.js';
 import { music } from './music.js';
 import { Timer, formatTime, formatDuration } from './timer.js';
 import { playBeep, unlockBeeps } from './beep.js';
+import { initWakeLock } from './wake.js';
 import {
   $,
   clear,
@@ -27,6 +28,7 @@ import {
   exitFullscreen,
   estimateCalories,
   formatDateFR,
+  formatRestLabel,
   todayKey,
   requestNotify
 } from './ui.js';
@@ -39,6 +41,7 @@ let sessionController = null;
 export async function boot() {
   await initStorage();
   program = await loadProgram();
+  initWakeLock();
 
   document.body.appendChild(buildNav());
   registerServiceWorker();
@@ -87,7 +90,11 @@ async function renderHome() {
   }
 
   $('#program-label').textContent = `${program.meta.title}`;
-  $('#program-sub').textContent = `${suggested.name} — ${suggested.focus} · ~${suggested.duration} min`;
+  const level = program.meta.level ? `Débutant · ` : '';
+  const goal = program.meta.goal === 'hypertrophie'
+    ? `${level}Hypertrophie · repos adaptés (1–2 min 30)`
+    : program.meta.subtitle;
+  $('#program-sub').textContent = `${suggested.name} — ${suggested.focus} · ~${suggested.duration} min · ${goal}`;
 
   const fill = $('#home-progress-fill');
   if (fill) fill.style.width = `${stats.progression}%`;
@@ -220,10 +227,13 @@ function renderExerciseCard(day, exercise, index) {
     el('div', { className: 'exercise-name', text: `${index + 1}. ${exercise.name}` }),
     muscleChips(exercise.muscles),
     el('div', { className: 'meta-row' }, [
-      el('span', { text: `${exercise.sets} séries` }),
-      el('span', { text: exercise.isHold ? `${exercise.tempsExercice}s maintien` : `${exercise.reps} reps` }),
-      el('span', { text: `Repos ${exercise.tempsRepos}s` })
+      el('span', { text: `${exercise.sets} × ${exercise.isHold ? `${exercise.tempsExercice}s` : exercise.reps}` }),
+      el('span', { text: `Repos ${formatRestLabel(exercise.tempsRepos)}` }),
+      exercise.kind ? el('span', { text: exercise.kind }) : null
     ]),
+    exercise.restNote
+      ? el('p', { className: 'card-text', style: 'margin:0.35rem 0 0;font-size:0.85rem;opacity:0.85', text: exercise.restNote })
+      : null,
     detail('Description', exercise.description),
     detail('Comment faire', exercise.howTo),
     detail('Respiration', exercise.breathing),
@@ -299,8 +309,8 @@ function startSession(day, startIndex = 0) {
       sessionController.destroy();
       sessionController = null;
     }
-    // Remove stale overlay so controls/DOM are always fresh
     $('#session-overlay')?.remove();
+    $('#completion-modal')?.remove();
     sessionController = createSessionController(day, startIndex);
     sessionController.start();
   } catch (error) {
@@ -334,15 +344,15 @@ function createSessionController(day, startIndex = 0) {
   let loads = {};
   let destroyed = false;
   let finishing = false;
-  let countdownTimer = null;
-  let inCountdown = false;
-  let countdownResolve = null;
+  let busy = false;
+  let countdownToken = 0;
+  /** @type {'between-sets'|'between-exercises'} */
+  let restKind = 'between-sets';
 
   const settings = getSettings();
 
   const timer = new Timer({
     onTick: (state) => {
-      if (inCountdown) return;
       timeEl.textContent = formatTime(state.remaining);
       ring.style.strokeDasharray = String(CIRCUMFERENCE);
       ring.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - state.progress));
@@ -350,16 +360,20 @@ function createSessionController(day, startIndex = 0) {
     },
     onEndingBeep: (second) => {
       playBeep({
-        frequency: second === 1 ? 1100 : 740,
-        duration: second === 1 ? 0.2 : 0.12,
-        volume: 0.3
+        frequency: second === 1 ? 980 : 700,
+        duration: 0.1,
+        volume: 0.18
       });
-      subEl.textContent = second === 1 ? 'Go !' : `Fin dans ${second}…`;
+      if (mode === 'rest') {
+        subEl.textContent = second === 1 ? 'Série suivante…' : `Reprise dans ${second}s`;
+      } else {
+        subEl.textContent = second === 1 ? 'Série bientôt finie' : `Encore ${second}s`;
+      }
     },
     onComplete: () => {
-      if (destroyed || finishing || inCountdown) return;
-      if (mode === 'work') afterWorkComplete();
-      else afterRestComplete();
+      if (destroyed || finishing || busy) return;
+      if (mode === 'work') void advanceAfterWork();
+      else void advanceAfterRest();
     }
   });
 
@@ -372,7 +386,11 @@ function createSessionController(day, startIndex = 0) {
   }
 
   function restSeconds(ex) {
-    return Number(ex.tempsRepos ?? settings.defaultRestSeconds ?? 75);
+    return Number(ex.tempsRepos ?? settings.defaultRestSeconds ?? program?.meta?.defaultRestSeconds ?? 90);
+  }
+
+  function afterExerciseRestSeconds() {
+    return Number(program?.meta?.restAfterExerciseSeconds ?? 90);
   }
 
   function updateProgress() {
@@ -381,14 +399,12 @@ function createSessionController(day, startIndex = 0) {
     for (let i = 0; i < exerciseIndex; i += 1) done += Number(day.exercises[i].sets || 3);
     done += Math.max(0, setIndex - 1);
     if (mode === 'rest') done += 1;
-    const pct = Math.min(100, Math.round((done / Math.max(1, total)) * 100));
-    progressEl.style.width = `${pct}%`;
-    const dayFill = $('#day-session-progress');
-    if (dayFill) dayFill.style.width = `${pct}%`;
+    progressEl.style.width = `${Math.min(100, Math.round((done / Math.max(1, total)) * 100))}%`;
   }
 
   function updateRemaining(current = 0) {
     let seconds = Number(current) || 0;
+    const betweenExercises = afterExerciseRestSeconds();
     for (let i = exerciseIndex; i < day.exercises.length; i += 1) {
       const ex = day.exercises[i];
       const sets = Number(ex.sets || 3);
@@ -396,84 +412,76 @@ function createSessionController(day, startIndex = 0) {
       for (let s = startSet; s <= sets; s += 1) {
         if (i === exerciseIndex && s === setIndex) {
           if (mode === 'work') {
-            if (s < sets) seconds += 3 + restSeconds(ex) + 3;
+            if (s < sets) seconds += restSeconds(ex);
+            else if (i < day.exercises.length - 1) seconds += betweenExercises;
           } else if (mode === 'rest') {
-            seconds += 3 + workSeconds(ex);
-            if (s < sets) seconds += 3 + restSeconds(ex);
+            // current rest already in `current`
+            if (restKind === 'between-exercises') {
+              seconds += workSeconds(ex);
+              // full remaining sets of next exercises handled below via continue + later loops
+            } else {
+              seconds += workSeconds(ex);
+              if (s < sets) seconds += restSeconds(ex);
+              if (s === sets && i < day.exercises.length - 1) seconds += betweenExercises;
+            }
           }
           continue;
         }
-        seconds += 3 + workSeconds(ex);
-        if (s < sets) seconds += 3 + restSeconds(ex);
+        seconds += workSeconds(ex);
+        if (s < sets) seconds += restSeconds(ex);
+        else if (i < day.exercises.length - 1) seconds += betweenExercises;
       }
     }
     remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
   }
 
-  function clearCountdown() {
-    if (countdownTimer) {
-      clearTimeout(countdownTimer);
-      countdownTimer = null;
-    }
-    if (countdownResolve) {
-      const resolve = countdownResolve;
-      countdownResolve = null;
-      resolve('aborted');
-    }
-    inCountdown = false;
-  }
-
-  function sleep(ms) {
+  function sleep(ms, token) {
     return new Promise((resolve) => {
-      countdownResolve = resolve;
-      countdownTimer = setTimeout(() => {
-        countdownTimer = null;
-        countdownResolve = null;
-        resolve('ok');
-      }, ms);
+      setTimeout(() => resolve(token === countdownToken), ms);
     });
   }
 
-  /** Compte à rebours 3-2-1 avec bips. Retourne false si annulé. */
-  async function countdown(label) {
-    clearCountdown();
+  async function runCountdown(label) {
+    const token = ++countdownToken;
     timer.stop();
-    inCountdown = true;
+    music.duck(true);
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
     phaseEl.textContent = 'Prêt';
     ring.classList.remove('rest');
     ring.style.strokeDashoffset = String(CIRCUMFERENCE);
 
     for (let n = 3; n >= 1; n -= 1) {
-      if (destroyed || finishing) {
-        inCountdown = false;
+      if (destroyed || finishing || token !== countdownToken) {
+        music.duck(false);
         return false;
       }
       timeEl.textContent = String(n);
       subEl.textContent = label;
       playBeep({
-        frequency: n === 1 ? 1100 : 740,
-        duration: n === 1 ? 0.22 : 0.12,
-        volume: 0.32
+        frequency: n === 1 ? 1100 : 780,
+        duration: n === 1 ? 0.2 : 0.1,
+        volume: 0.28
       });
-      const result = await sleep(1000);
-      if (result === 'aborted' || destroyed || finishing) {
-        inCountdown = false;
+      const ok = await sleep(1000, token);
+      if (!ok || destroyed || finishing) {
+        music.duck(false);
         return false;
       }
     }
 
-    inCountdown = false;
-    return !(destroyed || finishing);
+    music.duck(false);
+    return !(destroyed || finishing) && token === countdownToken;
   }
 
-  async function startWork() {
+  async function startWorkPhase() {
+    if (destroyed || finishing) return;
     const exercise = currentExercise();
     if (!exercise) {
-      finishSession(true);
+      await finishSession(true);
       return;
     }
 
+    busy = true;
     mode = 'work';
     nameEl.textContent = exercise.name;
     setSessionBackground(exercise);
@@ -484,8 +492,12 @@ function createSessionController(day, startIndex = 0) {
       ? `Série ${setIndex}/${sets} — maintien`
       : `Série ${setIndex}/${sets} — ${exercise.reps} reps`;
 
-    const ok = await countdown(label);
-    if (!ok) return;
+    await music.play('exercise', { loop: true });
+    const ok = await runCountdown(label);
+    if (!ok) {
+      busy = false;
+      return;
+    }
 
     phaseEl.textContent = 'Exercice';
     subEl.textContent = label;
@@ -494,38 +506,62 @@ function createSessionController(day, startIndex = 0) {
       setDoneBtn.classList.remove('hidden');
       setDoneBtn.textContent = 'Série terminée → Repos';
     }
-    // Await play so autoplay/volume issues surface; force audible volume
-    await music.play('exercise', { loop: true, fade: false });
+    await music.play('exercise', { loop: true });
     timer.start(workSeconds(exercise));
     updateRemaining(workSeconds(exercise));
+    busy = false;
   }
 
-  async function startRest() {
+  async function startRestPhase(kind = 'between-sets') {
+    if (destroyed || finishing) return;
     const exercise = currentExercise();
-    if (!exercise) {
-      finishSession(true);
+    if (!exercise && kind === 'between-sets') {
+      await finishSession(true);
       return;
     }
 
+    busy = true;
     mode = 'rest';
-    nameEl.textContent = exercise.name;
-    setSessionBackground(exercise);
+    restKind = kind;
+
+    const sets = Number(exercise?.sets || 3);
+    let rest;
+    let label;
+    let nextName = '';
+
+    if (kind === 'between-exercises') {
+      rest = afterExerciseRestSeconds();
+      const next = day.exercises[exerciseIndex];
+      nextName = next?.name || 'exercice suivant';
+      nameEl.textContent = nextName;
+      if (next) setSessionBackground(next);
+      label = `Repos ${formatRestLabel(rest)} — prochain : ${nextName}`;
+      phaseEl.textContent = 'Repos exercice';
+    } else {
+      rest = restSeconds(exercise);
+      nameEl.textContent = exercise.name;
+      setSessionBackground(exercise);
+      label = `Repos ${formatRestLabel(rest)} — puis série ${setIndex}/${sets}`;
+      phaseEl.textContent = 'Repos';
+    }
+
     updateProgress();
 
-    const sets = Number(exercise.sets || 3);
-    const rest = restSeconds(exercise);
-    const label = `Repos ${rest}s — prochaine série ${setIndex}/${sets}`;
+    await music.play('rest', { loop: true });
+    const ok = await runCountdown(label);
+    if (!ok) {
+      busy = false;
+      return;
+    }
 
-    const ok = await countdown(label);
-    if (!ok) return;
-
-    phaseEl.textContent = 'Repos';
+    phaseEl.textContent = kind === 'between-exercises' ? 'Repos entre exercices' : 'Repos';
     subEl.textContent = label;
     ring.classList.add('rest');
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
-    await music.play('rest', { loop: true, fade: false });
+    await music.play('rest', { loop: true });
     timer.start(rest);
     updateRemaining(rest);
+    busy = false;
   }
 
   function markExerciseDone(exercise) {
@@ -540,37 +576,61 @@ function createSessionController(day, startIndex = 0) {
     if (doneBox) doneBox.checked = true;
   }
 
-  function afterWorkComplete() {
+  async function advanceAfterWork() {
+    if (busy || destroyed || finishing) return;
+    busy = true;
+    timer.stop();
+
     const exercise = currentExercise();
-    if (!exercise) return;
+    if (!exercise) {
+      busy = false;
+      await finishSession(true);
+      return;
+    }
+
     const sets = Number(exercise.sets || 3);
 
     if (setIndex < sets) {
-      // Série finie → repos, puis série suivante
+      // Repos court entre séries
       setIndex += 1;
-      void startRest();
+      busy = false;
+      await startRestPhase('between-sets');
+      return;
+    }
+
+    // 3 séries terminées
+    markExerciseDone(exercise);
+    exerciseIndex += 1;
+    setIndex = 1;
+    busy = false;
+
+    if (exerciseIndex >= day.exercises.length) {
+      await finishSession(true);
     } else {
-      // Toutes les séries de cet exercice sont faites
-      markExerciseDone(exercise);
-      exerciseIndex += 1;
-      setIndex = 1;
-      if (exerciseIndex >= day.exercises.length) finishSession(true);
-      else void startWork();
+      // Repos 2 min 30 avant l'exercice suivant (hypertrophie)
+      await startRestPhase('between-exercises');
     }
   }
 
-  function afterRestComplete() {
-    // Repos fini → 3 bips puis série suivante (déjà géré dans startWork)
-    void startWork();
+  async function advanceAfterRest() {
+    if (busy || destroyed || finishing) return;
+    if (restKind === 'between-exercises') {
+      await startWorkPhase();
+      return;
+    }
+    // Après repos entre séries → série suivante (setIndex déjà incrémenté)
+    await startWorkPhase();
   }
 
   async function finishSession(completed) {
     if (finishing || destroyed) return;
     finishing = true;
-    clearCountdown();
+    busy = true;
+    countdownToken += 1;
     timer.stop();
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
-    void music.play('finish', { loop: false, fade: false });
+    await music.stop();
+    void music.play('finish', { loop: false });
 
     const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
     const calories = estimateCalories(durationSeconds / 60, program.meta.caloriesPerMinute);
@@ -607,8 +667,50 @@ function createSessionController(day, startIndex = 0) {
 
     overlay.classList.remove('active');
     overlay.removeEventListener('click', onOverlayClick);
+    document.body.style.overflow = '';
     await exitFullscreen();
     showCompletionModal(day, durationSeconds, calories);
+  }
+
+  async function exitToExercises(savePartial) {
+    if (destroyed) return;
+    countdownToken += 1;
+    timer.stop();
+    await music.stop();
+
+    if (savePartial) {
+      const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
+      if (durationSeconds > 5) {
+        try {
+          await saveSession({
+            date: new Date().toISOString(),
+            dayId: day.id,
+            dayName: day.name,
+            focus: day.focus,
+            durationSeconds,
+            plannedMinutes: day.duration,
+            exercisesCompleted: completedExercises.size,
+            exerciseTotal: day.exercises.length,
+            calories: estimateCalories(durationSeconds / 60, program.meta.caloriesPerMinute),
+            loads,
+            notes: '',
+            completed: false
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+
+    destroyed = true;
+    finishing = true;
+    overlay.removeEventListener('click', onOverlayClick);
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    await exitFullscreen();
+    overlay.remove();
+    sessionController = null;
+    openDayView(day);
   }
 
   const onOverlayClick = (event) => {
@@ -617,46 +719,56 @@ function createSessionController(day, startIndex = 0) {
 
     switch (btn.id) {
       case 'btn-set-done':
-        if (inCountdown || mode !== 'work') return;
-        timer.stop();
-        afterWorkComplete();
+        if (busy || mode !== 'work') return;
+        void advanceAfterWork();
         break;
       case 'btn-pause':
-        if (inCountdown) return;
+        if (busy) return;
         timer.toggle();
         btn.textContent = timer.getState().paused ? 'Reprendre' : 'Pause';
         break;
       case 'btn-skip':
-        if (inCountdown) {
-          clearCountdown();
-          // Skip countdown: jump into current mode timer
+        if (busy) {
+          countdownToken += 1;
+          music.duck(false);
           const exercise = currentExercise();
-          if (!exercise) break;
           if (mode === 'rest') {
-            phaseEl.textContent = 'Repos';
-            subEl.textContent = `Repos ${restSeconds(exercise)}s — série ${setIndex}/${exercise.sets}`;
+            if (!exercise && restKind !== 'between-exercises') break;
+            const secs = restKind === 'between-exercises'
+              ? afterExerciseRestSeconds()
+              : restSeconds(exercise);
+            phaseEl.textContent = restKind === 'between-exercises' ? 'Repos entre exercices' : 'Repos';
+            subEl.textContent = restKind === 'between-exercises'
+              ? `Repos ${formatRestLabel(secs)} — ${exercise?.name || 'suivant'}`
+              : `Repos ${formatRestLabel(secs)} — série ${setIndex}/${exercise.sets}`;
             ring.classList.add('rest');
             if (setDoneBtn) setDoneBtn.classList.add('hidden');
             void music.play('rest', { loop: true });
-            timer.start(restSeconds(exercise));
+            timer.start(secs);
+            busy = false;
           } else {
+            if (!exercise) break;
             phaseEl.textContent = 'Exercice';
             subEl.textContent = `Série ${setIndex}/${exercise.sets}`;
             ring.classList.remove('rest');
             if (setDoneBtn) setDoneBtn.classList.remove('hidden');
             void music.play('exercise', { loop: true });
             timer.start(workSeconds(exercise));
+            busy = false;
           }
         } else {
           timer.skip();
         }
         break;
-      case 'btn-stop':
+      case 'btn-back-exercises':
       case 'btn-close-session':
-        finishSession(false);
+        void exitToExercises(true);
+        break;
+      case 'btn-stop':
+        void finishSession(false);
         break;
       case 'btn-restart':
-        clearCountdown();
+        countdownToken += 1;
         timer.stop();
         exerciseIndex = Math.max(0, Number(startIndex) || 0);
         setIndex = 1;
@@ -664,8 +776,9 @@ function createSessionController(day, startIndex = 0) {
         completedExercises = new Set();
         startedAt = Date.now();
         finishing = false;
+        busy = false;
         $('#btn-pause').textContent = 'Pause';
-        void startWork();
+        void startWorkPhase();
         break;
       default:
         break;
@@ -674,7 +787,6 @@ function createSessionController(day, startIndex = 0) {
 
   return {
     start() {
-      // Afficher l'écran immédiatement (ne pas attendre la musique)
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
       $('#session-day-title').textContent = `${day.name} — ${day.focus}`;
@@ -688,22 +800,19 @@ function createSessionController(day, startIndex = 0) {
 
       mode = 'work';
       setIndex = 1;
-
-      // Unlock + start music as soon as session opens (still in click stack if sync enough)
+      void enterFullscreen(overlay);
       void (async () => {
         await music.unlock();
         await unlockBeeps();
-        // Start exercise music during first countdown so audio keeps playing
-        await music.play('exercise', { loop: true, fade: false });
-        void enterFullscreen(overlay);
-        void startWork();
+        await startWorkPhase();
       })();
     },
     destroy() {
       destroyed = true;
-      clearCountdown();
+      finishing = true;
+      countdownToken += 1;
       timer.stop();
-      void music.stop({ fade: false });
+      void music.stop();
       overlay.removeEventListener('click', onOverlayClick);
       overlay.classList.remove('active');
       document.body.style.overflow = '';
@@ -766,7 +875,10 @@ function ensureSessionOverlay() {
         <div class="brand-sub" id="session-day-title">Séance</div>
         <strong id="session-exercise-name">Exercice</strong>
       </div>
-      <button class="btn btn-ghost" type="button" id="btn-close-session" aria-label="Fermer">✕</button>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <button class="btn btn-secondary" type="button" id="btn-back-exercises">← Exercices</button>
+        <button class="btn btn-ghost" type="button" id="btn-close-session" aria-label="Fermer">✕</button>
+      </div>
     </div>
     <div class="session-image-panel">
       <img id="session-exercise-img" alt="Illustration de l'exercice" width="1200" height="750" />
@@ -812,8 +924,8 @@ function showCompletionModal(day, durationSeconds, calories) {
     style: 'z-index:90;place-items:center;display:grid'
   }, [
     el('div', { className: 'card fade-in-scale', style: 'width:min(420px,92vw);text-align:center' }, [
-      el('div', { className: 'badge done badge-pop', text: 'Badge obtenu' }),
-      el('h2', { className: 'greeting', style: 'font-size:1.8rem;margin:1rem 0', text: 'Séance terminée' }),
+      el('div', { className: 'badge done badge-pop', text: 'Séance enregistrée' }),
+      el('h2', { className: 'greeting', style: 'font-size:1.8rem;margin:1rem 0', text: 'Bravo !' }),
       el('p', { className: 'card-text', text: `${day.name} — ${day.focus}` }),
       el('p', { className: 'stat-value', style: 'margin:1rem 0', text: formatDuration(durationSeconds) }),
       el('p', { className: 'card-text', text: `${calories} kcal estimées` }),
@@ -821,13 +933,22 @@ function showCompletionModal(day, durationSeconds, calories) {
         el('button', {
           className: 'btn btn-primary',
           type: 'button',
-          text: 'Voir l\'historique',
-          onClick: () => navigate('historique')
+          text: '← Retour aux exercices',
+          onClick: () => {
+            modal.remove();
+            openDayView(day);
+          }
         }),
         el('button', {
           className: 'btn btn-secondary',
           type: 'button',
-          text: 'Retour au programme',
+          text: 'Voir l\'historique',
+          onClick: () => navigate('historique')
+        }),
+        el('button', {
+          className: 'btn btn-ghost',
+          type: 'button',
+          text: 'Programme de la semaine',
           onClick: () => {
             modal.remove();
             navigate('programme');

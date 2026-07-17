@@ -546,6 +546,13 @@ textarea:focus-visible {
   backdrop-filter: blur(12px);
 }
 
+#btn-back-exercises {
+  min-height: 44px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .session-main {
   position: relative;
   z-index: 2;

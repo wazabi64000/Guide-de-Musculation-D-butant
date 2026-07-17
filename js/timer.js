@@ -10,14 +10,16 @@ export class Timer {
     this.rafId = null;
     this.lastTs = 0;
     this.beepedSeconds = new Set();
+    this.completed = false;
   }
 
   start(seconds) {
-    this.stop();
-    this.duration = Math.max(0, Number(seconds) || 0);
+    this.stop(false);
+    this.duration = Math.max(1, Number(seconds) || 1);
     this.remaining = this.duration;
     this.running = true;
     this.paused = false;
+    this.completed = false;
     this.beepedSeconds = new Set();
     this.lastTs = performance.now();
     this.onTick(this.getState());
@@ -32,9 +34,8 @@ export class Timer {
     this.lastTs = now;
     this.remaining = Math.max(0, this.remaining - delta);
 
-    // 3 bips before the end: at 3s, 2s, 1s remaining
     const ceil = Math.ceil(this.remaining);
-    if (ceil >= 1 && ceil <= 3 && this.duration > 3 && !this.beepedSeconds.has(ceil)) {
+    if (ceil >= 1 && ceil <= 3 && this.duration > 5 && !this.beepedSeconds.has(ceil)) {
       this.beepedSeconds.add(ceil);
       this.onEndingBeep(ceil, this.getState());
     }
@@ -43,7 +44,10 @@ export class Timer {
 
     if (this.remaining <= 0) {
       this.running = false;
-      this.onComplete(this.getState());
+      if (!this.completed) {
+        this.completed = true;
+        this.onComplete(this.getState());
+      }
       return;
     }
 
@@ -69,18 +73,26 @@ export class Timer {
     else this.pause();
   }
 
-  stop() {
+  stop(resetCompleted = true) {
     this.running = false;
     this.paused = false;
     if (this.rafId) cancelAnimationFrame(this.rafId);
     this.rafId = null;
+    if (resetCompleted) this.completed = false;
+  }
+
+  /** End current phase once (safe against double fire). */
+  finish() {
+    if (this.completed) return;
+    this.stop(false);
+    this.remaining = 0;
+    this.completed = true;
+    this.onTick(this.getState());
+    this.onComplete(this.getState());
   }
 
   skip() {
-    this.stop();
-    this.remaining = 0;
-    this.onTick(this.getState());
-    this.onComplete(this.getState());
+    this.finish();
   }
 
   getState() {

@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS = {
   musicVolume: 0.55,
   musicMuted: false,
   musicAutoplay: true,
-  defaultRestSeconds: 75,
+  defaultRestSeconds: 90,
   defaultExerciseSeconds: 45,
   notifications: true,
   userName: ''
