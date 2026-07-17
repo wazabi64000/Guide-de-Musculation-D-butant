@@ -19,11 +19,6 @@
     min-height: 140px;
   }
 
-  .session-bg {
-    background-size: cover;
-    background-position: center top;
-  }
-
   .session-main {
     padding: 0.5rem 0.75rem;
   }
@@ -71,10 +66,6 @@
   .session-actions {
     grid-template-columns: repeat(4, 1fr);
   }
-
-  .session-bg {
-    background-size: contain;
-  }
 }
 
 @media (min-width: 900px) {
@@ -109,11 +100,6 @@
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
     overflow: hidden;
-  }
-
-  .session-bg {
-    background-size: cover;
-    background-position: center;
   }
 }
 

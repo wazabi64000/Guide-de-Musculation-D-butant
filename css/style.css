@@ -488,29 +488,6 @@ textarea:focus-visible {
   display: flex;
 }
 
-.session-bg {
-  position: absolute;
-  inset: 0;
-  background-color: #0b1220;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 0;
-  transition: background-image 0.35s ease;
-  filter: none;
-  opacity: 1;
-}
-
-/* Soft veil only — keep the exercise image readable */
-.session-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(8, 12, 22, 0.45) 0%, rgba(8, 12, 22, 0.15) 35%, rgba(8, 12, 22, 0.2) 55%, rgba(8, 12, 22, 0.72) 100%);
-  pointer-events: none;
-}
-
 .session-image-panel {
   position: relative;
   z-index: 2;
@@ -519,6 +496,7 @@ textarea:focus-visible {
   max-height: 42vh;
   min-height: 160px;
   overflow: hidden;
+  background: #0b1220;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -530,7 +508,7 @@ textarea:focus-visible {
   object-fit: contain;
   object-position: center;
   display: block;
-  background: rgba(12, 20, 34, 0.85);
+  background: #0b1220;
 }
 
 .session-header {
@@ -542,8 +520,8 @@ textarea:focus-visible {
   gap: 1rem;
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(11, 18, 32, 0.72);
-  backdrop-filter: blur(12px);
+  background: #0b1220;
+  flex-shrink: 0;
 }
 
 #btn-back-exercises {
@@ -563,6 +541,7 @@ textarea:focus-visible {
   gap: 0.75rem;
   padding: 0.75rem 1.25rem 0.5rem;
   min-height: 0;
+  background: #0b1220;
 }
 
 .timer-wrap {
@@ -664,8 +643,8 @@ textarea:focus-visible {
   display: grid;
   gap: 0.75rem;
   border-top: 1px solid var(--border);
-  background: rgba(11, 18, 32, 0.55);
-  backdrop-filter: blur(10px);
+  background: #0b1220;
+  flex-shrink: 0;
 }
 
 .session-actions {

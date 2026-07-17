@@ -821,41 +821,26 @@ function createSessionController(day, startIndex = 0) {
 }
 
 function setSessionBackground(exercise) {
-  const bg = $('#session-bg');
   const panelImg = $('#session-exercise-img');
   const path = String(exercise?.image || '').replace(/^\//, '');
   const url = path ? `${path}?v=9` : '';
 
-  if (bg) {
-    if (!url) {
-      bg.style.backgroundImage = 'none';
-    } else {
-      const preload = new Image();
-      preload.onload = () => {
-        bg.style.backgroundImage = `url("${url}")`;
-      };
-      preload.onerror = () => {
-        bg.style.backgroundImage = 'none';
-      };
-      preload.src = url;
-    }
+  if (!panelImg) return;
+
+  if (!url) {
+    panelImg.removeAttribute('src');
+    panelImg.alt = 'Image manquante';
+    return;
   }
 
-  if (panelImg) {
-    if (!url) {
-      panelImg.removeAttribute('src');
-      panelImg.alt = 'Image manquante';
-    } else {
-      panelImg.alt = exercise?.name || 'Exercice';
-      panelImg.src = url;
-      panelImg.onerror = () => {
-        panelImg.style.opacity = '0.3';
-      };
-      panelImg.onload = () => {
-        panelImg.style.opacity = '1';
-      };
-    }
-  }
+  panelImg.alt = exercise?.name || 'Exercice';
+  panelImg.src = url;
+  panelImg.onerror = () => {
+    panelImg.style.opacity = '0.3';
+  };
+  panelImg.onload = () => {
+    panelImg.style.opacity = '1';
+  };
 }
 
 function ensureSessionOverlay() {
@@ -869,7 +854,6 @@ function ensureSessionOverlay() {
   overlay.setAttribute('aria-label', 'Séance en cours');
 
   overlay.innerHTML = `
-    <div class="session-bg" id="session-bg" aria-hidden="true"></div>
     <div class="session-header">
       <div>
         <div class="brand-sub" id="session-day-title">Séance</div>
