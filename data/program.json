@@ -53,7 +53,7 @@
         {
           "id": "lat-pulldown",
           "name": "Tirage vertical (Lat Pulldown)",
-          "image": "images/lat-pulldown.png",
+          "image": "images/lat-pulldown.gif",
           "muscles": [
             "Grand dorsal",
             "Biceps"
@@ -72,7 +72,7 @@
         {
           "id": "seated-row",
           "name": "Rowing assis",
-          "image": "images/seated-row.png",
+          "image": "images/seated-row.gif",
           "muscles": [
             "Dos",
             "Arrière des épaules"
@@ -91,7 +91,7 @@
         {
           "id": "seated-row-horizontal",
           "name": "Tirage horizontal machine",
-          "image": "images/seated-row-horizontal.png",
+          "image": "images/seated-row-horizontal.gif",
           "muscles": [
             "Milieu du dos"
           ],
@@ -109,7 +109,7 @@
         {
           "id": "pullover",
           "name": "Pull-over machine",
-          "image": "images/pullover.png",
+          "image": "images/pullover.gif",
           "muscles": [
             "Grand dorsal"
           ],
@@ -127,7 +127,7 @@
         {
           "id": "crunch-machine-mon",
           "name": "Crunch machine",
-          "image": "images/crunch-machine.png",
+          "image": "images/crunch-machine.gif",
           "muscles": [
             "Abdominaux"
           ],
@@ -173,7 +173,7 @@
         {
           "id": "shoulder-press",
           "name": "Développé épaules machine",
-          "image": "images/shoulder-press.png",
+          "image": "images/shoulder-press.gif",
           "muscles": [
             "Épaules"
           ],
@@ -191,7 +191,7 @@
         {
           "id": "lateral-raise",
           "name": "Élévations latérales machine",
-          "image": "images/lateral-raise.png",
+          "image": "images/lateral-raise.gif",
           "muscles": [
             "Épaules"
           ],
@@ -209,7 +209,7 @@
         {
           "id": "reverse-fly",
           "name": "Oiseau machine",
-          "image": "images/reverse-fly.png",
+          "image": "images/reverse-fly.gif",
           "muscles": [
             "Arrière des épaules"
           ],
@@ -227,7 +227,7 @@
         {
           "id": "dips",
           "name": "Dips machine",
-          "image": "images/dips.png",
+          "image": "images/dips.gif",
           "muscles": [
             "Triceps",
             "Pectoraux"
@@ -246,7 +246,7 @@
         {
           "id": "triceps-pushdown",
           "name": "Extension triceps poulie",
-          "image": "images/triceps-pushdown.png",
+          "image": "images/triceps-pushdown.gif",
           "muscles": [
             "Triceps"
           ],
@@ -273,7 +273,7 @@
         {
           "id": "leg-press",
           "name": "Presse à cuisses",
-          "image": "images/leg-press.png",
+          "image": "images/leg-press.gif",
           "muscles": [
             "Quadriceps",
             "Fessiers"
@@ -292,7 +292,7 @@
         {
           "id": "leg-extension",
           "name": "Leg Extension",
-          "image": "images/leg-extension.png",
+          "image": "images/leg-extension.gif",
           "muscles": [
             "Quadriceps"
           ],
@@ -310,7 +310,7 @@
         {
           "id": "leg-curl",
           "name": "Leg Curl",
-          "image": "images/leg-curl.png",
+          "image": "images/leg-curl.gif",
           "muscles": [
             "Ischio-jambiers"
           ],
@@ -328,7 +328,7 @@
         {
           "id": "seated-calf",
           "name": "Mollets assis",
-          "image": "images/seated-calf.png",
+          "image": "images/seated-calf.gif",
           "muscles": [
             "Mollets"
           ],
@@ -346,7 +346,7 @@
         {
           "id": "crunch-machine-thu",
           "name": "Crunch machine",
-          "image": "images/crunch-machine.png",
+          "image": "images/crunch-machine.gif",
           "muscles": [
             "Abdominaux"
           ],
@@ -392,7 +392,7 @@
         {
           "id": "chest-press",
           "name": "Chest Press",
-          "image": "images/chest-press.png",
+          "image": "images/chest-press.gif",
           "muscles": [
             "Pectoraux"
           ],
@@ -410,7 +410,7 @@
         {
           "id": "incline-press",
           "name": "Développé incliné machine",
-          "image": "images/incline-press.png",
+          "image": "images/incline-press.gif",
           "muscles": [
             "Haut des pectoraux"
           ],
@@ -428,7 +428,7 @@
         {
           "id": "pec-deck",
           "name": "Pec Deck",
-          "image": "images/pec-deck.png",
+          "image": "images/pec-deck.gif",
           "muscles": [
             "Pectoraux"
           ],
@@ -446,7 +446,7 @@
         {
           "id": "biceps-curl",
           "name": "Curl biceps machine",
-          "image": "images/biceps-curl.png",
+          "image": "images/biceps-curl.gif",
           "muscles": [
             "Biceps"
           ],
@@ -464,7 +464,7 @@
         {
           "id": "cable-curl",
           "name": "Curl poulie",
-          "image": "images/cable-curl.png",
+          "image": "images/cable-curl.gif",
           "muscles": [
             "Biceps"
           ],
