@@ -1,32 +1,48 @@
 import { getCachedSetting } from './storage.js';
 
-const TRACKS = {
-  exercise: 'music/exercise.mp3',
-  rest: 'music/rest.mp3',
-  finish: 'music/finish.mp3'
-};
+/** Une piste d'exercice par série (cycle si plus de séries que de pistes). */
+const EXERCISE_TRACKS = [
+  'music/exercise-1.mp3',
+  'music/exercise-2.mp3',
+  'music/exercise-3.mp3',
+  'music/exercise-4.mp3'
+];
+
+/** Playlist repos : change à chaque phase de repos. */
+const REST_TRACKS = [
+  'music/rest-1.mp3',
+  'music/rest-2.mp3',
+  'music/rest-3.mp3',
+  'music/rest-4.mp3',
+  'music/rest-5.mp3'
+];
+
+const FINISH_TRACK = 'music/finish.mp3';
 
 function makeAudio(src) {
   const audio = new Audio();
   audio.preload = 'auto';
   audio.playsInline = true;
   audio.loop = true;
-  audio.src = src;
+  if (src) audio.src = src;
   return audio;
 }
 
 class MusicPlayer {
   constructor() {
-    /** @type {Record<string, HTMLAudioElement>} */
     this.players = {
-      exercise: makeAudio(TRACKS.exercise),
-      rest: makeAudio(TRACKS.rest),
-      finish: makeAudio(TRACKS.finish)
+      exercise: makeAudio(EXERCISE_TRACKS[0]),
+      rest: makeAudio(REST_TRACKS[0]),
+      finish: makeAudio(FINISH_TRACK)
     };
+    this.players.finish.loop = false;
     this.currentKey = null;
+    this.currentSrc = null;
     this.unlocked = false;
     this.duckLevel = 1;
     this.playToken = 0;
+    this.restCursor = 0;
+    this.restIndex = 0;
   }
 
   isEnabled() {
@@ -48,7 +64,6 @@ class MusicPlayer {
     audio.volume = this.targetVolume();
   }
 
-  /** Hard-stop every track so nothing can overlap. */
   stopAll() {
     Object.entries(this.players).forEach(([key, audio]) => {
       try {
@@ -57,10 +72,10 @@ class MusicPlayer {
       } catch {
         /* ignore */
       }
-      if (key === 'finish') audio.loop = false;
-      else audio.loop = true;
+      audio.loop = key !== 'finish';
     });
     this.currentKey = null;
+    this.currentSrc = null;
   }
 
   async unlock() {
@@ -81,7 +96,6 @@ class MusicPlayer {
     }
   }
 
-  /** Lower volume during countdown beeps */
   duck(on) {
     this.duckLevel = on ? 0.18 : 1;
     if (this.currentKey && this.players[this.currentKey] && !this.players[this.currentKey].paused) {
@@ -89,8 +103,29 @@ class MusicPlayer {
     }
   }
 
-  async play(key, { loop = true } = {}) {
+  resolveSrc(key, { setIndex } = {}) {
+    if (key === 'exercise') {
+      const n = EXERCISE_TRACKS.length;
+      const i = Math.max(0, (Number(setIndex) || 1) - 1) % n;
+      return EXERCISE_TRACKS[i];
+    }
+    if (key === 'rest') {
+      // Nouvelle piste uniquement à l'entrée en repos (pas sur le 2e play de la même phase)
+      if (this.currentKey !== 'rest') {
+        this.restIndex = this.restCursor % REST_TRACKS.length;
+        this.restCursor += 1;
+      }
+      return REST_TRACKS[this.restIndex];
+    }
+    if (key === 'finish') return FINISH_TRACK;
+    return null;
+  }
+
+  async play(key, { loop = true, setIndex } = {}) {
     if (!this.isEnabled() || !this.players[key]) return false;
+
+    const src = this.resolveSrc(key, { setIndex });
+    if (!src) return false;
 
     const token = ++this.playToken;
     await this.unlock();
@@ -98,14 +133,14 @@ class MusicPlayer {
 
     const audio = this.players[key];
 
-    // Same track already playing — just restore volume
-    if (this.currentKey === key && !audio.paused) {
+    // Même piste déjà en cours
+    if (this.currentKey === key && this.currentSrc === src && !audio.paused) {
       this.duck(false);
       this.applyVolume(key);
       return true;
     }
 
-    // Stop every other track first (prevents exercise + rest overlap)
+    // Coupe les autres slots
     Object.entries(this.players).forEach(([k, el]) => {
       if (k === key) return;
       try {
@@ -118,13 +153,18 @@ class MusicPlayer {
 
     if (token !== this.playToken) return false;
 
+    if (this.currentSrc !== src || !audio.src.includes(src.split('/').pop())) {
+      audio.src = src;
+    }
+
     this.currentKey = key;
+    this.currentSrc = src;
     audio.loop = Boolean(loop);
     this.duck(false);
     this.applyVolume(key);
 
     try {
-      if (audio.currentTime > 0.05) audio.currentTime = 0;
+      audio.currentTime = 0;
     } catch {
       /* ignore */
     }
@@ -137,7 +177,7 @@ class MusicPlayer {
       }
       return true;
     } catch (error) {
-      console.warn('Music play failed:', key, error);
+      console.warn('Music play failed:', key, src, error);
       return false;
     }
   }
