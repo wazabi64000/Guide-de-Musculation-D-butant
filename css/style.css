@@ -1135,3 +1135,70 @@ input[type="range"]::-moz-range-thumb {
   border-color: rgba(214, 40, 40, 0.25);
   box-shadow: var(--shadow), 0 0 40px rgba(214, 40, 40, 0.15);
 }
+
+/* ——— Charges recommandées (feature) ——— */
+.load-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.load-tip-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  cursor: help;
+}
+
+.load-meta {
+  margin-top: 0.55rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.load-meta-line {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.load-meta-line.muted {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.load-feedback-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.load-feedback-card {
+  width: min(420px, 100%);
+  margin: 0;
+}
+
+.load-feedback-options {
+  display: grid;
+  gap: 0.55rem;
+  margin: 1rem 0;
+}
+
+.load-feedback-btn {
+  width: 100%;
+  justify-content: flex-start;
+}

@@ -6,8 +6,20 @@ import {
   getAllProgress,
   upsertRecord,
   getNote,
-  saveNote
+  saveNote,
+  getLoad,
+  saveLoad
 } from './database.js';
+import {
+  LOAD_TIP,
+  FEEDBACK_OPTIONS,
+  getDefaultLoad,
+  formatKg,
+  formatDelta,
+  nextRecommendedWeight,
+  resolveTodayWeight,
+  buildLoadSummary
+} from './loads.js';
 import { loadProgram, getDayById, getSuggestedDay, estimateDayDuration, collectMuscles, weekProgressKey } from './program.js';
 import { computeStats, renderHistoryList, renderRecords, drawWeeklyChart } from './stats.js';
 import { bindSettingsPage } from './settings.js';
@@ -206,21 +218,57 @@ function openDayView(day) {
 function renderExerciseCard(day, exercise, index) {
   const card = el('article', { className: 'exercise-card fade-in' });
   const body = el('div', { className: 'exercise-body' });
+  const defaults = getDefaultLoad(exercise.id);
 
   const weightInput = el('input', {
     type: 'number',
     min: '0',
     step: '0.5',
-    placeholder: 'kg',
-    id: `weight-${exercise.id}`
+    placeholder: defaults.kg === null ? (defaults.note || '—') : 'kg',
+    id: `weight-${exercise.id}`,
+    'aria-describedby': `load-meta-${exercise.id}`
   });
+  if (defaults.kg === null && defaults.note) {
+    weightInput.disabled = true;
+  }
+
   const notesInput = el('textarea', {
     placeholder: 'Notes',
     id: `notes-${exercise.id}`
   });
 
+  const metaBox = el('div', {
+    className: 'load-meta',
+    id: `load-meta-${exercise.id}`
+  });
+
+  const tipBtn = el('button', {
+    className: 'load-tip-btn',
+    type: 'button',
+    title: LOAD_TIP,
+    'aria-label': 'Information sur la charge recommandée',
+    text: 'ⓘ',
+    onClick: (event) => {
+      event.preventDefault();
+      window.alert(LOAD_TIP);
+    }
+  });
+
   getNote(exercise.id).then((note) => {
     notesInput.value = note || '';
+  });
+
+  getLoad(exercise.id).then((saved) => {
+    const today = resolveTodayWeight(exercise.id, saved);
+    if (today.value != null) {
+      weightInput.value = String(today.value);
+    }
+    renderLoadMeta(metaBox, exercise.id, saved, weightInput.value);
+  });
+
+  weightInput.addEventListener('input', async () => {
+    const saved = await getLoad(exercise.id);
+    renderLoadMeta(metaBox, exercise.id, saved, weightInput.value);
   });
 
   body.append(
@@ -239,7 +287,14 @@ function renderExerciseCard(day, exercise, index) {
     detail('Respiration', exercise.breathing),
     detail('Erreurs à éviter', exercise.mistakes),
     el('div', { className: 'field-row' }, [
-      el('div', { className: 'field' }, [el('label', { text: 'Charge (kg)' }), weightInput]),
+      el('div', { className: 'field' }, [
+        el('label', { className: 'load-label-row' }, [
+          'Charge (kg) ',
+          tipBtn
+        ]),
+        weightInput,
+        metaBox
+      ]),
       el('div', { className: 'field' }, [el('label', { text: 'Notes' }), notesInput])
     ]),
     el('label', { className: 'check-row' }, [
@@ -278,6 +333,142 @@ function renderExerciseCard(day, exercise, index) {
 
   card.append(createImageWithFallback(exercise.image, exercise.name), body);
   return card;
+}
+
+function renderLoadMeta(container, exerciseId, saved, todayRaw) {
+  if (!container) return;
+  clear(container);
+  const summary = buildLoadSummary(exerciseId, saved, todayRaw);
+
+  if (summary.note && summary.baseKg === null) {
+    container.appendChild(
+      el('p', { className: 'load-meta-line', text: `Charge recommandée : ${summary.note}` })
+    );
+    return;
+  }
+
+  container.append(
+    el('p', {
+      className: 'load-meta-line',
+      text: `Charge recommandée : ${formatKg(summary.recommended)} kg`
+    }),
+    el('p', {
+      className: 'load-meta-line muted',
+      text: `Dernière séance : ${summary.lastUsed != null ? `${formatKg(summary.lastUsed)} kg` : '—'}`
+    }),
+    el('p', {
+      className: 'load-meta-line muted',
+      text: `Aujourd'hui : ${summary.today != null && !Number.isNaN(summary.today) ? `${formatKg(summary.today)} kg` : '—'}`
+    }),
+    el('p', {
+      className: 'load-meta-line muted',
+      text: `Progression : ${formatDelta(summary.progression)}`
+    })
+  );
+}
+
+/**
+ * Feedback ressenti après un exercice (adapte la prochaine charge).
+ */
+function askLoadFeedback(exercise, { setsComplete = true } = {}) {
+  const defaults = getDefaultLoad(exercise.id);
+  if (defaults.kg === null) {
+    return Promise.resolve(null);
+  }
+
+  return new Promise((resolve) => {
+    const existing = document.getElementById('load-feedback-modal');
+    existing?.remove();
+
+    const weightInput = document.getElementById(`weight-${exercise.id}`);
+    const usedWeight = Number(weightInput?.value || defaults.kg || 0);
+
+    const painBox = el('input', { type: 'checkbox', id: 'load-feedback-pain' });
+    const formBox = el('input', { type: 'checkbox', id: 'load-feedback-form' });
+
+    const modal = el('div', {
+      id: 'load-feedback-modal',
+      className: 'load-feedback-modal',
+      role: 'dialog',
+      'aria-modal': 'true',
+      'aria-label': 'Ressenti de charge'
+    });
+
+    const panel = el('div', { className: 'card load-feedback-card' }, [
+      el('h2', { className: 'card-title', text: 'Comment était cette charge ?' }),
+      el('p', {
+        className: 'card-text',
+        text: `${exercise.name} · ${formatKg(usedWeight)} kg`
+      }),
+      el(
+        'div',
+        { className: 'load-feedback-options' },
+        FEEDBACK_OPTIONS.map((opt) =>
+          el('button', {
+            className: 'btn btn-secondary load-feedback-btn',
+            type: 'button',
+            text: opt.label,
+            onClick: async () => {
+              const pain = Boolean(painBox.checked);
+              const badForm = Boolean(formBox.checked);
+              const next = nextRecommendedWeight({
+                usedWeight,
+                feedback: opt.id,
+                region: defaults.region,
+                setsComplete,
+                pain,
+                badForm
+              });
+
+              const prev = (await getLoad(exercise.id)) || {};
+              const firstUsed =
+                prev.firstUsed != null ? Number(prev.firstUsed) : usedWeight;
+
+              await saveLoad(exercise.id, {
+                lastUsed: usedWeight,
+                firstUsed,
+                nextRecommended: next,
+                lastFeedback: opt.id,
+                pain,
+                badForm
+              });
+
+              const meta = document.getElementById(`load-meta-${exercise.id}`);
+              const saved = await getLoad(exercise.id);
+              renderLoadMeta(meta, exercise.id, saved, weightInput?.value);
+              if (weightInput && next != null) {
+                // Ne force pas le champ aujourd'hui ; la reco sert pour la prochaine séance
+              }
+
+              modal.remove();
+              resolve({ feedback: opt.id, next });
+            }
+          })
+        )
+      ),
+      el('label', { className: 'check-row' }, [
+        painBox,
+        el('span', { text: 'Douleur ressentie' })
+      ]),
+      el('label', { className: 'check-row' }, [
+        formBox,
+        el('span', { text: 'Mauvaise technique' })
+      ]),
+      el('button', {
+        className: 'btn btn-ghost',
+        type: 'button',
+        text: 'Passer',
+        style: 'width:100%;margin-top:0.5rem',
+        onClick: () => {
+          modal.remove();
+          resolve(null);
+        }
+      })
+    ]);
+
+    modal.appendChild(panel);
+    document.body.appendChild(modal);
+  });
 }
 
 function detail(title, text) {
@@ -575,6 +766,15 @@ function createSessionController(day, startIndex = 0) {
     if (weight > 0) {
       loads[exercise.id] = weight;
       upsertRecord(exercise.id, weight);
+      getLoad(exercise.id).then((prev) => {
+        const base = getDefaultLoad(exercise.id);
+        return saveLoad(exercise.id, {
+          lastUsed: weight,
+          firstUsed: prev?.firstUsed != null ? prev.firstUsed : weight,
+          nextRecommended:
+            prev?.nextRecommended != null ? prev.nextRecommended : base.kg
+        });
+      }).catch(() => {});
     }
     const doneBox = document.getElementById(`done-${exercise.id}`);
     if (doneBox) doneBox.checked = true;
@@ -604,14 +804,18 @@ function createSessionController(day, startIndex = 0) {
 
     // 3 séries terminées
     markExerciseDone(exercise);
+    busy = false;
+    await askLoadFeedback(exercise, { setsComplete: true });
+
+    if (destroyed || finishing) return;
+
     exerciseIndex += 1;
     setIndex = 1;
-    busy = false;
 
     if (exerciseIndex >= day.exercises.length) {
       await finishSession(true);
     } else {
-      // Repos 2 min 30 avant l'exercice suivant (hypertrophie)
+      // Repos avant l'exercice suivant
       await startRestPhase('between-exercises');
     }
   }
@@ -962,7 +1166,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=31');
+      const registration = await navigator.serviceWorker.register('sw.js?v=33');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

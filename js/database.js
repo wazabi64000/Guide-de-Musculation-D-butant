@@ -1,11 +1,12 @@
 const DB_NAME = 'muscu-tracker';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = {
   sessions: 'sessions',
   settings: 'settings',
   progress: 'progress',
   records: 'records',
-  notes: 'notes'
+  notes: 'notes',
+  loads: 'loads'
 };
 
 let dbPromise = null;
@@ -42,6 +43,10 @@ function openDB() {
 
       if (!db.objectStoreNames.contains(STORES.notes)) {
         db.createObjectStore(STORES.notes, { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains(STORES.loads)) {
+        db.createObjectStore(STORES.loads, { keyPath: 'exerciseId' });
       }
     };
 
@@ -157,13 +162,36 @@ export async function getNote(id) {
   return result ? result.note : '';
 }
 
+export async function getLoad(exerciseId) {
+  const { store } = await tx(STORES.loads);
+  return req(store.get(exerciseId));
+}
+
+export async function saveLoad(exerciseId, data) {
+  const current = (await getLoad(exerciseId)) || { exerciseId };
+  const next = {
+    ...current,
+    ...data,
+    exerciseId,
+    updatedAt: new Date().toISOString()
+  };
+  const { store, done } = await tx(STORES.loads, 'readwrite');
+  store.put(next);
+  await done;
+  return next;
+}
+
 export async function clearAllData() {
   const db = await openDB();
-  const names = [STORES.sessions, STORES.progress, STORES.records, STORES.notes];
+  const names = [STORES.sessions, STORES.progress, STORES.records, STORES.notes, STORES.loads];
   await Promise.all(
     names.map(
       (name) =>
         new Promise((resolve, reject) => {
+          if (!db.objectStoreNames.contains(name)) {
+            resolve();
+            return;
+          }
           const transaction = db.transaction(name, 'readwrite');
           transaction.objectStore(name).clear();
           transaction.oncomplete = () => resolve();
