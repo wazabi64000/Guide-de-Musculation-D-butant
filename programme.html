@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1220" />
+  <meta name="theme-color" content="#0B0B0C" />
   <meta name="description" content="Programme split 4 jours — Lundi, Mardi, Jeudi, Vendredi." />
   <title>Programme — Muscu Débutant</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css?v=12" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/responsive.css?v=11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/variables.css?v=22" />
+  <link rel="stylesheet" href="css/style.css?v=22" />
+  <link rel="stylesheet" href="css/animations.css?v=22" />
+  <link rel="stylesheet" href="css/responsive.css?v=22" />
 </head>
 <body>
   <main class="app-shell">
@@ -20,18 +23,18 @@
         <div class="brand-mark" aria-hidden="true">M</div>
         <div>
           <div class="brand-title">Programme</div>
-          <div class="brand-sub">4 jours / semaine</div>
+          <div class="brand-sub">4 jours · Discipline</div>
         </div>
       </div>
     </header>
 
-    <h1 class="greeting">Programme</h1>
-    <p class="quote">Choisis un jour pour lancer ta séance.</p>
+    <h1 class="greeting fade-in">Programme</h1>
+    <p class="quote fade-in">Choisis un jour. Enchaîne. Progresser.</p>
 
     <section id="day-list" class="day-list" aria-label="Jours d'entraînement"></section>
     <section id="day-detail" class="hidden" aria-live="polite"></section>
   </main>
 
-  <script type="module" src="js/app.js?v=17"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 </body>
 </html>

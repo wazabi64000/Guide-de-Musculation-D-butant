@@ -1,29 +1,61 @@
 :root {
-  --bg: #0b1220;
-  --bg-elevated: #121a2b;
-  --bg-card: #162235;
-  --bg-card-hover: #1b2940;
-  --bg-muted: #1e2d45;
+  /* Surfaces — gym premium dark */
+  --bg: #0b0b0c;
+  --bg-elevated: #121214;
+  --bg-card: #1e1e20;
+  --bg-card-hover: #26262a;
+  --bg-muted: #161616;
+  --bg-surface: #161616;
   --border: rgba(255, 255, 255, 0.08);
-  --text: #f0f4f8;
-  --text-muted: #9aadbf;
-  --text-dim: #6d8096;
-  --accent: #3ddc97;
-  --accent-soft: rgba(61, 220, 151, 0.16);
-  --accent-strong: #2bbf7f;
-  --danger: #ff5c7a;
-  --warning: #ff8a4c;
-  --info: #4da3ff;
-  --success: #3ddc97;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.25);
-  --radius: 20px;
-  --radius-sm: 12px;
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Text */
+  --text: #ffffff;
+  --text-muted: #b5b5b5;
+  --text-dim: #7a7a7a;
+
+  /* Brand — force & énergie */
+  --primary: #d62828;
+  --primary-strong: #b71f1f;
+  --primary-soft: rgba(214, 40, 40, 0.16);
+  --primary-glow: rgba(214, 40, 40, 0.35);
+
+  --accent: #d62828;
+  --accent-soft: rgba(214, 40, 40, 0.16);
+  --accent-strong: #b71f1f;
+
+  --energy: #f77f00;
+  --energy-soft: rgba(247, 127, 0, 0.18);
+  --energy-glow: rgba(247, 127, 0, 0.32);
+
+  --success: #2ec27e;
+  --success-soft: rgba(46, 194, 126, 0.16);
+  --warning: #f4b400;
+  --warning-soft: rgba(244, 180, 0, 0.16);
+  --danger: #d62828;
+  --info: #f77f00;
+
+  /* Depth */
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 32px var(--primary-glow);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Shape */
+  --radius: 22px;
+  --radius-sm: 14px;
   --radius-lg: 28px;
-  --nav-height: 72px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  --nav-height: 76px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --font-display: "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
-  --font-body: "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  /* Type — athletic & premium */
+  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -31,24 +63,43 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --touch: 52px;
+  --space-10: 2.5rem;
+
+  --touch: 54px;
   --progress-track: rgba(255, 255, 255, 0.08);
+
+  --glass: rgba(30, 30, 32, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --metal: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 40%, rgba(255, 255, 255, 0.03));
+  --gradient-brand: linear-gradient(135deg, #d62828 0%, #f77f00 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 40%);
+  --gradient-hero: radial-gradient(900px 480px at 12% -8%, rgba(214, 40, 40, 0.22), transparent 55%),
+    radial-gradient(700px 420px at 100% 0%, rgba(247, 127, 0, 0.12), transparent 50%),
+    radial-gradient(600px 400px at 50% 100%, rgba(214, 40, 40, 0.06), transparent 55%);
 }
 
 [data-theme="light"] {
-  --bg: #f3f6fa;
+  --bg: #f4f2f0;
   --bg-elevated: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-hover: #f7fafc;
-  --bg-muted: #e8eef5;
-  --border: rgba(15, 23, 42, 0.08);
-  --text: #0f172a;
-  --text-muted: #475569;
-  --text-dim: #64748b;
-  --accent: #0f9f6e;
-  --accent-soft: rgba(15, 159, 110, 0.12);
-  --accent-strong: #0b7d56;
-  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-  --shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.06);
-  --progress-track: rgba(15, 23, 42, 0.08);
+  --bg-card-hover: #faf8f6;
+  --bg-muted: #ebe7e3;
+  --bg-surface: #f0eeeb;
+  --border: rgba(20, 16, 14, 0.08);
+  --border-strong: rgba(20, 16, 14, 0.14);
+  --text: #141010;
+  --text-muted: #5c5550;
+  --text-dim: #8a827c;
+  --primary-soft: rgba(214, 40, 40, 0.12);
+  --accent-soft: rgba(214, 40, 40, 0.12);
+  --energy-soft: rgba(247, 127, 0, 0.14);
+  --success-soft: rgba(46, 194, 126, 0.12);
+  --shadow: 0 16px 40px rgba(20, 16, 14, 0.1);
+  --shadow-soft: 0 6px 18px rgba(20, 16, 14, 0.07);
+  --shadow-card: 0 10px 28px rgba(20, 16, 14, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --progress-track: rgba(20, 16, 14, 0.08);
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(20, 16, 14, 0.08);
+  --gradient-hero: radial-gradient(900px 480px at 12% -8%, rgba(214, 40, 40, 0.1), transparent 55%),
+    radial-gradient(700px 420px at 100% 0%, rgba(247, 127, 0, 0.08), transparent 50%);
 }

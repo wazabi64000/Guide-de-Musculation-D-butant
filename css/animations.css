@@ -1,37 +1,59 @@
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes pulseSoft {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.03); opacity: 0.9; }
-}
-
-@keyframes progressGlow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.15); }
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.025);
+    opacity: 0.92;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes ringPulse {
-  0% { stroke-dashoffset: var(--ring-offset, 0); }
-  100% { stroke-dashoffset: 0; }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes badgePop {
-  0% { transform: scale(0.6); opacity: 0; }
-  70% { transform: scale(1.08); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
@@ -39,53 +61,169 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 10px 28px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 12px 36px var(--primary-glow), 0 0 28px var(--energy-glow);
+  }
+}
+
+@keyframes ringGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px var(--primary-glow));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px var(--primary-glow));
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 .fade-in {
-  animation: fadeIn 0.4s ease both;
+  animation: fadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .fade-in-scale {
-  animation: fadeInScale 0.35s ease both;
+  animation: fadeInScale 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .slide-up {
-  animation: slideUp 0.35s ease both;
+  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .pulse-soft {
-  animation: pulseSoft 2s ease-in-out infinite;
+  animation: pulseSoft 2.2s ease-in-out infinite;
 }
 
 .badge-pop {
-  animation: badgePop 0.45s ease both;
+  animation: badgePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+.grid-stats .stat-card:nth-child(1) { animation: riseIn 0.5s 0.05s both; }
+.grid-stats .stat-card:nth-child(2) { animation: riseIn 0.5s 0.1s both; }
+.grid-stats .stat-card:nth-child(3) { animation: riseIn 0.5s 0.15s both; }
+.grid-stats .stat-card:nth-child(4) { animation: riseIn 0.5s 0.2s both; }
+
+.day-list .day-card:nth-child(1) { animation: riseIn 0.45s 0.04s both; }
+.day-list .day-card:nth-child(2) { animation: riseIn 0.45s 0.1s both; }
+.day-list .day-card:nth-child(3) { animation: riseIn 0.45s 0.16s both; }
+.day-list .day-card:nth-child(4) { animation: riseIn 0.45s 0.22s both; }
+
+.exercise-list .exercise-card:nth-child(1) { animation: riseIn 0.45s 0.05s both; }
+.exercise-list .exercise-card:nth-child(2) { animation: riseIn 0.45s 0.1s both; }
+.exercise-list .exercise-card:nth-child(3) { animation: riseIn 0.45s 0.15s both; }
+.exercise-list .exercise-card:nth-child(4) { animation: riseIn 0.45s 0.2s both; }
+.exercise-list .exercise-card:nth-child(5) { animation: riseIn 0.45s 0.25s both; }
+.exercise-list .exercise-card:nth-child(6) { animation: riseIn 0.45s 0.3s both; }
+
+#history-list .history-item {
+  animation: riseIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#history-list .history-item:nth-child(1) { animation-delay: 0.04s; }
+#history-list .history-item:nth-child(2) { animation-delay: 0.08s; }
+#history-list .history-item:nth-child(3) { animation-delay: 0.12s; }
+#history-list .history-item:nth-child(4) { animation-delay: 0.16s; }
+#history-list .history-item:nth-child(5) { animation-delay: 0.2s; }
 
 .card,
 .stat-card,
 .day-card,
-.exercise-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+.exercise-card,
+.settings-card {
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+  will-change: transform;
+}
+
+.card:hover,
+.stat-card:hover,
+.day-card:hover,
+.exercise-card:hover {
+  transform: translate3d(0, -3px, 0);
+  border-color: rgba(247, 127, 0, 0.28);
+  box-shadow:
+    var(--shadow-card),
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(214, 40, 40, 0.08);
 }
 
 .card:active,
 .day-card:active,
-.exercise-card:active {
+.exercise-card:active,
+.stat-card:active {
   transform: scale(0.985);
 }
 
 .btn {
-  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s ease,
+    filter 0.2s ease,
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
 }
 
 .btn:active {
-  transform: scale(0.97);
+  transform: scale(0.965);
+}
+
+.btn-primary {
+  animation: glowPulse 3.5s ease-in-out infinite;
+}
+
+.btn-primary:active {
+  animation: none;
 }
 
 .progress-fill {
-  transition: width 0.35s ease;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.timer-progress,
 .timer-ring-progress {
   transition: stroke-dashoffset 0.2s linear;
+}
+
+.timer-progress:not(.rest) {
+  animation: ringGlow 2.8s ease-in-out infinite;
+}
+
+.nav-item {
+  transition:
+    transform 0.18s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.toggle {
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (hover: none) {
+  .card:hover,
+  .stat-card:hover,
+  .day-card:hover,
+  .exercise-card:hover {
+    transform: none;
+    border-color: var(--border);
+    box-shadow: var(--shadow-card);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1220" />
+  <meta name="theme-color" content="#0B0B0C" />
   <title>Historique — Muscu Débutant</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css?v=12" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/responsive.css?v=11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/variables.css?v=22" />
+  <link rel="stylesheet" href="css/style.css?v=22" />
+  <link rel="stylesheet" href="css/animations.css?v=22" />
+  <link rel="stylesheet" href="css/responsive.css?v=22" />
 </head>
 <body>
   <main class="app-shell">
@@ -19,19 +22,19 @@
         <div class="brand-mark" aria-hidden="true">M</div>
         <div>
           <div class="brand-title">Historique</div>
-          <div class="brand-sub">Séances enregistrées</div>
+          <div class="brand-sub">Tes séances · Progression</div>
         </div>
       </div>
     </header>
 
-    <h1 class="greeting">Historique</h1>
-    <p class="quote">Date, durée, charges et notes de chaque séance.</p>
+    <h1 class="greeting fade-in">Historique</h1>
+    <p class="quote fade-in">Chaque séance compte. Relis-les comme une timeline de victoires.</p>
 
-    <section class="card">
+    <section class="card fade-in">
       <div id="history-list"></div>
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=17"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 </body>
 </html>

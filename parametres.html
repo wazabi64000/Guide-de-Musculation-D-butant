@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1220" />
+  <meta name="theme-color" content="#0B0B0C" />
   <title>Paramètres — Muscu Débutant</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css?v=12" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/responsive.css?v=11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/variables.css?v=22" />
+  <link rel="stylesheet" href="css/style.css?v=22" />
+  <link rel="stylesheet" href="css/animations.css?v=22" />
+  <link rel="stylesheet" href="css/responsive.css?v=22" />
 </head>
 <body>
   <main class="app-shell">
@@ -19,15 +22,15 @@
         <div class="brand-mark" aria-hidden="true">M</div>
         <div>
           <div class="brand-title">Paramètres</div>
-          <div class="brand-sub">Préférences</div>
+          <div class="brand-sub">Ambiance · Contrôle</div>
         </div>
       </div>
     </header>
 
-    <h1 class="greeting">Paramètres</h1>
-    <p class="quote">Thème, musique et timers.</p>
+    <h1 class="greeting fade-in">Paramètres</h1>
+    <p class="quote fade-in">Thème, musique et timers — ton setup d'entraînement.</p>
 
-    <section class="settings-card">
+    <section class="settings-card fade-in">
       <div class="settings-row">
         <span>Mode sombre</span>
         <button class="toggle on" type="button" id="toggle-theme" aria-pressed="true" aria-label="Basculer le thème"></button>
@@ -46,12 +49,12 @@
       </div>
     </section>
 
-    <section class="settings-card">
-      <div class="field" style="margin-bottom:1rem">
+    <section class="settings-card fade-in">
+      <div class="field" style="margin-bottom:1.1rem">
         <label for="input-name">Prénom</label>
         <input id="input-name" type="text" placeholder="Ton prénom" autocomplete="nickname" />
       </div>
-      <div class="field" style="margin-bottom:1rem">
+      <div class="field" style="margin-bottom:1.1rem">
         <label for="range-volume">Volume musique</label>
         <input id="range-volume" type="range" min="0" max="1" step="0.05" value="0.55" />
       </div>
@@ -63,23 +66,23 @@
         <div class="field">
           <label for="input-rest">Repos de secours (s)</label>
           <input id="input-rest" type="number" min="45" max="180" step="15" value="90" />
-          <p class="card-text" style="margin-top:0.4rem;font-size:0.8rem;opacity:0.75">Utilisé seulement si un exercice n’a pas de repos défini. Sinon : 2 min 30 / 2 min / 1 min 15 / 1 min selon l’exercice.</p>
+          <p class="card-text" style="margin-top:0.45rem;font-size:0.8rem">Utilisé seulement si un exercice n’a pas de repos défini. Sinon : 2 min 30 / 2 min / 1 min 15 / 1 min selon l’exercice.</p>
         </div>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card fade-in">
       <h2 class="card-title">Données</h2>
       <p class="card-text" style="margin-bottom:1rem">La sauvegarde est automatique via IndexedDB.</p>
       <button class="btn btn-danger" type="button" id="btn-reset-data" style="width:100%">Réinitialiser les données</button>
     </section>
 
-    <section class="card">
+    <section class="card fade-in">
       <h2 class="card-title">Installation</h2>
       <p class="card-text">Sur mobile : menu du navigateur → « Ajouter à l'écran d'accueil ». L'app fonctionne hors ligne.</p>
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=17"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 </body>
 </html>

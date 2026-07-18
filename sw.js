@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muscu-debutant-v13';
+const CACHE_NAME = 'muscu-debutant-v22';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -32,6 +32,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (event) => {

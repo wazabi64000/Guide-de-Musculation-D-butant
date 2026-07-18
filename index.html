@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1220" />
+  <meta name="theme-color" content="#0B0B0C" />
   <meta name="description" content="Guide de musculation débutant — suivi de séances, timer et statistiques." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -11,10 +11,13 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css?v=12" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/responsive.css?v=11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/variables.css?v=22" />
+  <link rel="stylesheet" href="css/style.css?v=22" />
+  <link rel="stylesheet" href="css/animations.css?v=22" />
+  <link rel="stylesheet" href="css/responsive.css?v=22" />
 </head>
 <body>
   <main class="app-shell">
@@ -23,7 +26,7 @@
         <div class="brand-mark" aria-hidden="true">M</div>
         <div>
           <div class="brand-title">Muscu Débutant</div>
-          <div class="brand-sub">Split 4 jours</div>
+          <div class="brand-sub">Split 4 jours · Force</div>
         </div>
       </div>
     </header>
@@ -51,14 +54,14 @@
     </section>
 
     <section class="card fade-in">
-      <h2 class="card-title">Programme</h2>
+      <h2 class="card-title">Programme du jour</h2>
       <p class="card-text" id="program-label">Guide de Musculation Débutant</p>
-      <p class="card-text" id="program-sub" style="margin-top:0.35rem">Séance du jour</p>
-      <div class="progress-bar" style="margin:1rem 0">
+      <p class="card-text" id="program-sub" style="margin-top:0.45rem">Séance du jour</p>
+      <div class="progress-bar" style="margin:1.15rem 0">
         <div class="progress-fill" id="home-progress-fill"></div>
       </div>
-      <button class="btn btn-primary" type="button" id="btn-start">Commencer</button>
-      <button class="btn btn-secondary" type="button" id="btn-open-program" style="width:100%;margin-top:0.75rem">Voir le programme</button>
+      <button class="btn btn-primary" type="button" id="btn-start">Commencer la séance</button>
+      <button class="btn btn-secondary" type="button" id="btn-open-program" style="width:100%;margin-top:0.85rem">Voir le programme</button>
     </section>
 
     <section class="card fade-in">
@@ -67,6 +70,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=17"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 </body>
 </html>

@@ -951,12 +951,31 @@ function showCompletionModal(day, durationSeconds, calories) {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+
+  // Force clients onto the new SW as soon as it activates
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', async () => {
     try {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      // Force update so image/path fixes are not stuck in an old cache
-      await Promise.all(regs.map((reg) => reg.update()));
-      await navigator.serviceWorker.register(`sw.js?v=4`);
+      const registration = await navigator.serviceWorker.register('sw.js?v=22');
+      await registration.update();
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+      registration.addEventListener('updatefound', () => {
+        const worker = registration.installing;
+        if (!worker) return;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+            worker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
     } catch {
       /* offline or unsupported */
     }
