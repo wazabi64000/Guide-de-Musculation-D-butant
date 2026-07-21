@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muscu-debutant-v33';
+const CACHE_NAME = 'muscu-debutant-v35';
 const CORE_ASSETS = [
   './',
   './index.html',

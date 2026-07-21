@@ -380,6 +380,14 @@ function askLoadFeedback(exercise, { setsComplete = true } = {}) {
     const existing = document.getElementById('load-feedback-modal');
     existing?.remove();
 
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      document.getElementById('load-feedback-modal')?.remove();
+      resolve(value);
+    };
+
     const weightInput = document.getElementById(`weight-${exercise.id}`);
     const usedWeight = Number(weightInput?.value || defaults.kg || 0);
 
@@ -436,12 +444,7 @@ function askLoadFeedback(exercise, { setsComplete = true } = {}) {
               const meta = document.getElementById(`load-meta-${exercise.id}`);
               const saved = await getLoad(exercise.id);
               renderLoadMeta(meta, exercise.id, saved, weightInput?.value);
-              if (weightInput && next != null) {
-                // Ne force pas le champ aujourd'hui ; la reco sert pour la prochaine séance
-              }
-
-              modal.remove();
-              resolve({ feedback: opt.id, next });
+              finish({ feedback: opt.id, next });
             }
           })
         )
@@ -459,15 +462,15 @@ function askLoadFeedback(exercise, { setsComplete = true } = {}) {
         type: 'button',
         text: 'Passer',
         style: 'width:100%;margin-top:0.5rem',
-        onClick: () => {
-          modal.remove();
-          resolve(null);
-        }
+        onClick: () => finish(null)
       })
     ]);
 
     modal.appendChild(panel);
     document.body.appendChild(modal);
+
+    // Auto-passer après 12s pour ne jamais bloquer la séance
+    window.setTimeout(() => finish(null), 12000);
   });
 }
 
@@ -802,22 +805,25 @@ function createSessionController(day, startIndex = 0) {
       return;
     }
 
-    // 3 séries terminées
+    // Séries terminées → enchaîne tout de suite (feedback non bloquant)
     markExerciseDone(exercise);
-    busy = false;
-    await askLoadFeedback(exercise, { setsComplete: true });
-
-    if (destroyed || finishing) return;
-
+    const finishedExercise = exercise;
     exerciseIndex += 1;
     setIndex = 1;
+    busy = false;
+
+    // Feedback charge pendant le repos / avant la fin — ne bloque pas la fluidité
+    const feedbackPromise = askLoadFeedback(finishedExercise, { setsComplete: true });
 
     if (exerciseIndex >= day.exercises.length) {
+      await feedbackPromise;
+      if (destroyed || finishing) return;
       await finishSession(true);
-    } else {
-      // Repos avant l'exercice suivant
-      await startRestPhase('between-exercises');
+      return;
     }
+
+    void feedbackPromise;
+    await startRestPhase('between-exercises');
   }
 
   async function advanceAfterRest() {
@@ -1166,7 +1172,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=33');
+      const registration = await navigator.serviceWorker.register('sw.js?v=35');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

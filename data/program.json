@@ -2,20 +2,20 @@
   "meta": {
     "title": "Guide de Musculation Débutant",
     "subtitle": "Programme Split 4 jours/semaine",
-    "sessionDuration": 40,
+    "sessionDuration": 45,
     "defaultSets": 3,
     "defaultReps": "8-12",
-    "defaultRestSeconds": 90,
-    "defaultExerciseSeconds": 45,
+    "defaultRestSeconds": 75,
+    "defaultExerciseSeconds": 40,
     "warmupMinutes": 5,
     "stretchMinutes": 5,
     "caloriesPerMinute": 6.5,
     "instructions": [
-      "Échauffement : 5 minutes de vélo ou tapis.",
-      "Niveau débutant (0-1 an) : charges plus légères, recrutement musculaire limité, récupération rapide.",
-      "Repos adapté à l’exercice : ~2 min 30 polyarticulaire lourd · ~2 min polyarticulaire modéré · ~1 min 15 isolation · ~1 min finition.",
-      "Objectif hypertrophie : 6-8 (lourds), 8-10 (modérés), 12-15 (isolation).",
-      "Choisissez une charge permettant de finir toutes les répétitions avec une bonne technique.",
+      "Échauffement : 5 minutes.",
+      "Niveau débutant : séances de 30 à 45 minutes (idéal ~45 min).",
+      "Hypertrophie : 8-12 répétitions, 3 séries, repos 60 à 90 secondes.",
+      "Repos entre exercices : environ 1 minute.",
+      "Privilégiez la technique et une charge légère avant d’augmenter.",
       "Étirements : 5 minutes en fin de séance."
     ],
     "progressionTips": [
@@ -25,11 +25,11 @@
       "Consommez suffisamment de protéines pour favoriser la récupération.",
       "Notez vos charges après chaque séance."
     ],
-    "restAfterExerciseSeconds": 90,
+    "restAfterExerciseSeconds": 60,
     "goal": "hypertrophie",
-    "repRange": "6-15",
-    "intensity": "charges légères à modérées (~65-80% 1RM)",
-    "restGuidance": "Débutant : 1–1 min 30 en général ; jusqu’à 2–2 min 30 sur les polyarticulaires lourds.",
+    "repRange": "8-12",
+    "intensity": "charges légères à modérées",
+    "restGuidance": "Débutant : 60–90 s entre séries · séance ~45 min.",
     "level": "débutant",
     "experience": "0-1 an"
   },
@@ -47,7 +47,7 @@
       "id": "lundi",
       "name": "Lundi",
       "focus": "Dos & Abdominaux",
-      "duration": 40,
+      "duration": 45,
       "color": "#3DDC97",
       "exercises": [
         {
@@ -62,12 +62,12 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 4,
-          "reps": "6-8",
-          "tempsExercice": 45,
-          "tempsRepos": 150,
+          "sets": 3,
+          "reps": "8-12",
+          "tempsExercice": 40,
+          "tempsRepos": 90,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire lourd (tirage), forte demande nerveuse"
+          "restNote": "Tirage principal — 90s entre séries"
         },
         {
           "id": "seated-row",
@@ -82,11 +82,11 @@
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
-          "reps": "8-10",
-          "tempsExercice": 45,
-          "tempsRepos": 120,
+          "reps": "10-12",
+          "tempsExercice": 40,
+          "tempsRepos": 75,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire modéré, charges moyennes"
+          "restNote": "Polyarticulaire modéré — repos 75s"
         },
         {
           "id": "seated-row-horizontal",
@@ -100,11 +100,11 @@
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
-          "reps": "8-10",
-          "tempsExercice": 45,
-          "tempsRepos": 120,
+          "reps": "10-12",
+          "tempsExercice": 40,
+          "tempsRepos": 75,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire modéré, charges moyennes"
+          "restNote": "Polyarticulaire modéré — repos 75s"
         },
         {
           "id": "pullover",
@@ -119,10 +119,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "crunch-machine-mon",
@@ -137,10 +137,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 45,
-          "tempsRepos": 60,
+          "tempsExercice": 35,
+          "tempsRepos": 45,
           "kind": "isolation",
-          "restNote": "Isolation / core, récupération rapide"
+          "restNote": "Abdos — repos 45s"
         },
         {
           "id": "plank-mon",
@@ -155,11 +155,11 @@
           "mistakes": "Fesses trop hautes, dos creusé, apnée.",
           "sets": 3,
           "reps": 1,
-          "tempsExercice": 40,
-          "tempsRepos": 90,
+          "tempsExercice": 30,
+          "tempsRepos": 45,
           "isHold": true,
           "kind": "isometrie",
-          "restNote": "Maintien isométrique"
+          "restNote": "Gainage — maintien 30s, repos 45s"
         }
       ]
     },
@@ -167,7 +167,7 @@
       "id": "mardi",
       "name": "Mardi",
       "focus": "Épaules & Triceps",
-      "duration": 40,
+      "duration": 45,
       "color": "#4DA3FF",
       "exercises": [
         {
@@ -181,12 +181,12 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 4,
-          "reps": "6-8",
-          "tempsExercice": 45,
-          "tempsRepos": 150,
+          "sets": 3,
+          "reps": "8-12",
+          "tempsExercice": 40,
+          "tempsRepos": 90,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire lourd (épaules), forte demande nerveuse"
+          "restNote": "Développé épaules — 90s entre séries"
         },
         {
           "id": "lateral-raise",
@@ -201,10 +201,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "reverse-fly",
@@ -219,10 +219,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "dips",
@@ -237,11 +237,11 @@
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
-          "reps": "8-10",
-          "tempsExercice": 45,
-          "tempsRepos": 120,
+          "reps": "10-12",
+          "tempsExercice": 40,
+          "tempsRepos": 75,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire, fatigue cumulée"
+          "restNote": "Polyarticulaire modéré — repos 75s"
         },
         {
           "id": "triceps-pushdown",
@@ -256,10 +256,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
+          "tempsExercice": 40,
           "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, fin de séance, congestion maximale"
+          "restNote": "Isolation fin de séance — repos 60s"
         }
       ]
     },
@@ -267,7 +267,7 @@
       "id": "jeudi",
       "name": "Jeudi",
       "focus": "Jambes",
-      "duration": 40,
+      "duration": 45,
       "color": "#FF8A4C",
       "exercises": [
         {
@@ -282,12 +282,12 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 4,
-          "reps": "6-8",
-          "tempsExercice": 45,
-          "tempsRepos": 150,
+          "sets": 3,
+          "reps": "8-12",
+          "tempsExercice": 40,
+          "tempsRepos": 90,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire lourd (jambes), forte demande nerveuse"
+          "restNote": "Presse jambes — 90s entre séries"
         },
         {
           "id": "leg-extension",
@@ -302,10 +302,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "leg-curl",
@@ -320,10 +320,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "seated-calf",
@@ -338,10 +338,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
+          "tempsExercice": 40,
           "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, petite masse musculaire"
+          "restNote": "Isolation fin de séance — repos 60s"
         },
         {
           "id": "crunch-machine-thu",
@@ -356,10 +356,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 45,
-          "tempsRepos": 60,
+          "tempsExercice": 35,
+          "tempsRepos": 45,
           "kind": "isolation",
-          "restNote": "Isolation / core, récupération rapide"
+          "restNote": "Abdos — repos 45s"
         },
         {
           "id": "plank-thu",
@@ -374,11 +374,11 @@
           "mistakes": "Fesses trop hautes, dos creusé, apnée.",
           "sets": 3,
           "reps": 1,
-          "tempsExercice": 40,
-          "tempsRepos": 90,
+          "tempsExercice": 30,
+          "tempsRepos": 45,
           "isHold": true,
           "kind": "isometrie",
-          "restNote": "Maintien isométrique"
+          "restNote": "Gainage — maintien 30s, repos 45s"
         }
       ]
     },
@@ -386,7 +386,7 @@
       "id": "vendredi",
       "name": "Vendredi",
       "focus": "Pectoraux & Biceps",
-      "duration": 40,
+      "duration": 45,
       "color": "#FF5C7A",
       "exercises": [
         {
@@ -400,12 +400,12 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 4,
-          "reps": "6-8",
-          "tempsExercice": 45,
-          "tempsRepos": 150,
+          "sets": 3,
+          "reps": "8-12",
+          "tempsExercice": 40,
+          "tempsRepos": 90,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire lourd (pectoraux), forte demande nerveuse"
+          "restNote": "Chest press — 90s entre séries"
         },
         {
           "id": "incline-press",
@@ -419,11 +419,11 @@
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
-          "reps": "8-10",
-          "tempsExercice": 45,
-          "tempsRepos": 120,
+          "reps": "10-12",
+          "tempsExercice": 40,
+          "tempsRepos": 75,
           "kind": "polyarticulaire",
-          "restNote": "Polyarticulaire modéré, charges moyennes"
+          "restNote": "Polyarticulaire modéré — repos 75s"
         },
         {
           "id": "pec-deck",
@@ -438,10 +438,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "biceps-curl",
@@ -456,10 +456,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
-          "tempsRepos": 75,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, accent sur le stress métabolique"
+          "restNote": "Isolation — repos 60s"
         },
         {
           "id": "cable-curl",
@@ -474,10 +474,10 @@
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 50,
+          "tempsExercice": 40,
           "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Isolation, fin de séance, congestion maximale"
+          "restNote": "Isolation fin de séance — repos 60s"
         }
       ]
     }

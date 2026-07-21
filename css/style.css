@@ -1179,12 +1179,14 @@ input[type="range"]::-moz-range-thumb {
 .load-feedback-modal {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 200;
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.62);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: auto;
 }
 
 .load-feedback-card {
