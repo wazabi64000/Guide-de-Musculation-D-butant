@@ -2,7 +2,7 @@ let programCache = null;
 
 export async function loadProgram() {
   if (programCache) return programCache;
-  const response = await fetch(`data/program.json?v=35`);
+  const response = await fetch(`data/program.json?v=41`);
   if (!response.ok) throw new Error('Impossible de charger program.json');
   programCache = await response.json();
   return programCache;

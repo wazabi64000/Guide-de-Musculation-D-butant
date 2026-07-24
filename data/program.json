@@ -46,7 +46,7 @@
     {
       "id": "lundi",
       "name": "Lundi",
-      "focus": "Dos & Abdominaux",
+      "focus": "Dos & Biceps",
       "duration": 45,
       "color": "#3DDC97",
       "exercises": [
@@ -58,10 +58,10 @@
             "Grand dorsal",
             "Biceps"
           ],
-          "description": "Exercice de tirage pour développer le dos et les bras.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Exercice de tirage vertical pour développer le dos et les bras.",
+          "howTo": "Assis, cuisses calées. Tirez la barre vers le haut de la poitrine en gardant le torse stable, puis contrôlez la remontée.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "mistakes": "Charge trop lourde, balancier du buste, tirage derrière la nuque.",
           "sets": 3,
           "reps": "8-12",
           "tempsExercice": 40,
@@ -78,9 +78,9 @@
             "Arrière des épaules"
           ],
           "description": "Tirage horizontal pour densifier le milieu du dos.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "howTo": "Assis, torse droit. Tirez les poignées vers l'abdomen en serrant les omoplates, puis revenez sans arrondir le dos.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "mistakes": "Dos arrondi, élan du buste, épaules trop hautes.",
           "sets": 3,
           "reps": "10-12",
           "tempsExercice": 40,
@@ -96,7 +96,7 @@
             "Milieu du dos"
           ],
           "description": "Travail ciblé du milieu du dos en tirage contrôlé.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "howTo": "Réglage stable. Tirez horizontalement en gardant les coudes proches du corps et le dos neutre.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
           "sets": 3,
@@ -107,16 +107,36 @@
           "restNote": "Polyarticulaire modéré — repos 75s"
         },
         {
-          "id": "pullover",
-          "name": "Pull-over machine",
-          "image": "images/pullover.gif",
+          "id": "smith-row",
+          "name": "Rowing Smith machine",
+          "image": "images/smith-row.gif",
           "muscles": [
-            "Grand dorsal"
+            "Dos",
+            "Trapèzes",
+            "Rhomboïdes"
           ],
-          "description": "Étire et renforce le grand dorsal.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "description": "Rowing buste penché guidé à la Smith machine pour épaissir le dos en sécurité.",
+          "howTo": "Pieds largeur d'épaules, buste penché ~45°, dos neutre. Tirez la barre vers le bas de l'abdomen en serrant les omoplates, puis redescendez lentement.",
+          "breathing": "Expirez en tirant, inspirez en descendant.",
+          "mistakes": "Dos arrondi, tirer avec les bras seulement, à-coups.",
+          "sets": 3,
+          "reps": "10-12",
+          "tempsExercice": 40,
+          "tempsRepos": 75,
+          "kind": "polyarticulaire",
+          "restNote": "Polyarticulaire modéré — repos 75s"
+        },
+        {
+          "id": "biceps-curl",
+          "name": "Curl biceps machine",
+          "image": "images/biceps-curl.gif",
+          "muscles": [
+            "Biceps"
+          ],
+          "description": "Curl guidé pour isoler les biceps en fin de séance dos.",
+          "howTo": "Coudes calés. Montez la charge sans balancer le buste, puis redescendez en contrôlant.",
+          "breathing": "Expirez en montant, inspirez en descendant.",
+          "mistakes": "Élan du corps, coudes qui avancent, amplitude incomplète.",
           "sets": 3,
           "reps": "12-15",
           "tempsExercice": 40,
@@ -125,41 +145,24 @@
           "restNote": "Isolation — repos 60s"
         },
         {
-          "id": "crunch-machine-mon",
-          "name": "Crunch machine",
-          "image": "images/crunch-machine.gif",
+          "id": "cable-hammer-curl",
+          "name": "Curl poulie à la corde (prise marteau)",
+          "image": "images/cable-hammer-curl.png",
           "muscles": [
-            "Abdominaux"
+            "Biceps",
+            "Brachial",
+            "Avant-bras"
           ],
-          "description": "Renforcement des abdominaux sur machine guidée.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "description": "Curl à la poulie basse avec corde en prise neutre (marteau) pour brachial et biceps.",
+          "howTo": "Corde en prise marteau (pouces vers le haut). Coudes collés au corps, montez jusqu'à la contraction puis redescendez lentement.",
+          "breathing": "Expirez en montant, inspirez en descendant.",
+          "mistakes": "Coudes qui partent en avant, balancier, prise qui tourne.",
           "sets": 3,
           "reps": "12-15",
-          "tempsExercice": 35,
-          "tempsRepos": 45,
+          "tempsExercice": 40,
+          "tempsRepos": 60,
           "kind": "isolation",
-          "restNote": "Abdos — repos 45s"
-        },
-        {
-          "id": "plank-mon",
-          "name": "Gainage",
-          "image": "images/plank.png",
-          "muscles": [
-            "Sangle abdominale"
-          ],
-          "description": "Maintien isométrique pour stabiliser le tronc.",
-          "howTo": "Corps aligné, gainé, regard vers le sol. Maintenez la position sans creuser le dos.",
-          "breathing": "Respirez calmement et régulièrement pendant le maintien.",
-          "mistakes": "Fesses trop hautes, dos creusé, apnée.",
-          "sets": 3,
-          "reps": 1,
-          "tempsExercice": 30,
-          "tempsRepos": 45,
-          "isHold": true,
-          "kind": "isometrie",
-          "restNote": "Gainage — maintien 30s, repos 45s"
+          "restNote": "Isolation fin de séance — repos 60s"
         }
       ]
     },
@@ -209,7 +212,7 @@
         {
           "id": "reverse-fly",
           "name": "Oiseau machine",
-          "image": "images/reverse-fly.gif",
+          "image": "images/reverse-fly.png",
           "muscles": [
             "Arrière des épaules"
           ],
@@ -344,51 +347,69 @@
           "restNote": "Isolation fin de séance — repos 60s"
         },
         {
-          "id": "crunch-machine-thu",
-          "name": "Crunch machine",
-          "image": "images/crunch-machine.gif",
+          "id": "hip-abduction",
+          "name": "Abducteurs machine",
+          "image": "images/hip-abduction.gif",
           "muscles": [
-            "Abdominaux"
+            "Abducteurs",
+            "Moyen fessier"
           ],
-          "description": "Renforcement des abdominaux sur machine guidée.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
-          "reps": "12-15",
-          "tempsExercice": 35,
+          "description": "Écarte les jambes contre résistance pour renforcer l'extérieur des cuisses et stabiliser les hanches.",
+          "howTo": "Assis, dos calé. Poussez les pads vers l'extérieur lentement, pause courte, puis revenez sans claquer.",
+          "breathing": "Expirez en écartant, inspirez en revenant.",
+          "mistakes": "Charge trop lourde, à-coups, dos qui quitte le dossier.",
+          "sets": 4,
+          "reps": "20",
+          "tempsExercice": 45,
           "tempsRepos": 45,
           "kind": "isolation",
-          "restNote": "Abdos — repos 45s"
+          "restNote": "Très léger — 4×20, repos 45s"
         },
         {
-          "id": "plank-thu",
-          "name": "Gainage",
-          "image": "images/plank.png",
+          "id": "hip-adduction",
+          "name": "Adducteurs machine",
+          "image": "images/hip-adduction.gif",
           "muscles": [
-            "Sangle abdominale"
+            "Adducteurs"
           ],
-          "description": "Maintien isométrique pour stabiliser le tronc.",
-          "howTo": "Corps aligné, gainé, regard vers le sol. Maintenez la position sans creuser le dos.",
-          "breathing": "Respirez calmement et régulièrement pendant le maintien.",
-          "mistakes": "Fesses trop hautes, dos creusé, apnée.",
-          "sets": 3,
-          "reps": 1,
-          "tempsExercice": 30,
+          "description": "Rapproche les jambes contre résistance pour renforcer l'intérieur des cuisses.",
+          "howTo": "Assis, dos calé. Serrez les pads vers l'intérieur lentement, pause courte, puis contrôlez l'ouverture.",
+          "breathing": "Expirez en serrant, inspirez en ouvrant.",
+          "mistakes": "Charge trop lourde, à-coups, amplitude forcée.",
+          "sets": 4,
+          "reps": "20",
+          "tempsExercice": 45,
           "tempsRepos": 45,
-          "isHold": true,
-          "kind": "isometrie",
-          "restNote": "Gainage — maintien 30s, repos 45s"
+          "kind": "isolation",
+          "restNote": "Très léger — 4×20, repos 45s"
         }
       ]
     },
     {
       "id": "vendredi",
       "name": "Vendredi",
-      "focus": "Pectoraux & Biceps",
+      "focus": "Pectoraux",
       "duration": 45,
       "color": "#FF5C7A",
       "exercises": [
+        {
+          "id": "cable-fly",
+          "name": "Écarté poulie",
+          "image": "images/cable-fly.png",
+          "muscles": [
+            "Pectoraux"
+          ],
+          "description": "Écarté aux poulies hautes pour étirer et contracter les pectoraux en isolation.",
+          "howTo": "Une jambe légèrement avancée. Bras ouverts, légèrement fléchis. Ramenez les poignées vers le bas du sternum en serrant la poitrine, puis contrôlez le retour.",
+          "breathing": "Expirez en resserrant, inspirez en ouvrant.",
+          "mistakes": "Coudes verrouillés, élan du buste, amplitude forcée.",
+          "sets": 3,
+          "reps": "12-15",
+          "tempsExercice": 40,
+          "tempsRepos": 60,
+          "kind": "isolation",
+          "restNote": "Isolation — repos 60s"
+        },
         {
           "id": "chest-press",
           "name": "Chest Press",
@@ -396,10 +417,10 @@
           "muscles": [
             "Pectoraux"
           ],
-          "description": "Développé couché guidé pour les pectoraux.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Développé guidé pour les pectoraux.",
+          "howTo": "Dos calé. Poussez les poignées vers l'avant sans verrouiller les coudes, puis revenez contrôlé.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "mistakes": "Charge trop lourde, épaules trop hautes, dos qui quitte le dossier.",
           "sets": 3,
           "reps": "8-12",
           "tempsExercice": 40,
@@ -415,9 +436,9 @@
             "Haut des pectoraux"
           ],
           "description": "Cible le haut des pectoraux.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "howTo": "Réglage incliné. Poussez vers le haut/avant en gardant le dos collé, puis redescendez lentement.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "mistakes": "Charge trop lourde, dos creusé, amplitude incomplète.",
           "sets": 3,
           "reps": "10-12",
           "tempsExercice": 40,
@@ -433,9 +454,9 @@
             "Pectoraux"
           ],
           "description": "Isolation des pectoraux en écarté machine.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "howTo": "Avant-bras sur les pads. Serrez devant la poitrine sans à-coups, puis ouvrez en contrôlant.",
+          "breathing": "Expirez en serrant, inspirez en ouvrant.",
+          "mistakes": "Épaules trop avancées, mouvement trop rapide.",
           "sets": 3,
           "reps": "12-15",
           "tempsExercice": 40,
@@ -444,40 +465,24 @@
           "restNote": "Isolation — repos 60s"
         },
         {
-          "id": "biceps-curl",
-          "name": "Curl biceps machine",
-          "image": "images/biceps-curl.gif",
+          "id": "db-bench-press",
+          "name": "Développé couché haltères",
+          "image": "images/db-bench-press.png",
           "muscles": [
-            "Biceps"
+            "Pectoraux",
+            "Triceps",
+            "Épaules"
           ],
-          "description": "Curl guidé pour isoler les biceps.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
+          "description": "Développé couché avec haltères pour un travail libre et symétrique des pectoraux.",
+          "howTo": "Allongé, pieds au sol. Haltères au niveau de la poitrine, coudes ~45°. Poussez vers le haut puis redescendez contrôlé.",
+          "breathing": "Expirez en poussant, inspirez en descendant.",
+          "mistakes": "Dos trop cambré, haltères qui partent en dehors, rebond sur la poitrine.",
           "sets": 3,
-          "reps": "12-15",
+          "reps": "8-12",
           "tempsExercice": 40,
-          "tempsRepos": 60,
-          "kind": "isolation",
-          "restNote": "Isolation — repos 60s"
-        },
-        {
-          "id": "cable-curl",
-          "name": "Curl poulie",
-          "image": "images/cable-curl.gif",
-          "muscles": [
-            "Biceps"
-          ],
-          "description": "Curl à la poulie pour un travail continu des biceps.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
-          "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
-          "reps": "12-15",
-          "tempsExercice": 40,
-          "tempsRepos": 60,
-          "kind": "isolation",
-          "restNote": "Isolation fin de séance — repos 60s"
+          "tempsRepos": 90,
+          "kind": "polyarticulaire",
+          "restNote": "Polyarticulaire — 90s entre séries"
         }
       ]
     }

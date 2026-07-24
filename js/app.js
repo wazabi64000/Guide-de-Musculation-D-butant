@@ -1172,7 +1172,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=35');
+      const registration = await navigator.serviceWorker.register('sw.js?v=41');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
