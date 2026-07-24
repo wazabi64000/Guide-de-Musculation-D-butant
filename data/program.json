@@ -109,7 +109,7 @@
         {
           "id": "smith-row",
           "name": "Rowing Smith machine",
-          "image": "images/smith-row.gif",
+          "image": "images/smith-row.png",
           "muscles": [
             "Dos",
             "Trapèzes",
@@ -394,7 +394,7 @@
       "exercises": [
         {
           "id": "cable-fly",
-          "name": "Écarté poulie",
+          "name": "Écarté poulie haute",
           "image": "images/cable-fly.png",
           "muscles": [
             "Pectoraux"
