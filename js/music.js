@@ -5,7 +5,11 @@ const EXERCISE_TRACKS = [
   'music/exercise-1.mp3',
   'music/exercise-2.mp3',
   'music/exercise-3.mp3',
-  'music/exercise-4.mp3'
+  'music/exercise-4.mp3',
+  'music/exercise-5.mp3',
+  'music/exercise-6.mp3',
+  'music/exercise-7.mp3',
+  'music/exercise-8.mp3'
 ];
 
 /** Playlist repos : change à chaque phase de repos. */
@@ -14,7 +18,14 @@ const REST_TRACKS = [
   'music/rest-2.mp3',
   'music/rest-3.mp3',
   'music/rest-4.mp3',
-  'music/rest-5.mp3'
+  'music/rest-5.mp3',
+  'music/rest-6.mp3',
+  'music/rest-7.mp3',
+  'music/rest-8.mp3',
+  'music/rest-9.mp3',
+  'music/rest-10.mp3',
+  'music/rest-11.mp3',
+  'music/rest-12.mp3'
 ];
 
 const FINISH_TRACK = 'music/finish.mp3';
