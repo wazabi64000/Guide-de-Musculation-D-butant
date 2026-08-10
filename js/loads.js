@@ -7,34 +7,35 @@ export const LOAD_TIP =
 
 /** @type {Record<string, { kg: number|null, region: 'upper'|'lower'|'core'|'none', note?: string }>} */
 const DEFAULTS = {
-  'chest-press': { kg: 10, region: 'upper' },
-  'incline-press': { kg: 10, region: 'upper' },
-  'pec-deck': { kg: 10, region: 'upper' },
-  'cable-fly': { kg: 5, region: 'upper' },
-  'db-bench-press': { kg: 8, region: 'upper' },
-  'lat-pulldown': { kg: 15, region: 'upper' },
-  'seated-row': { kg: 15, region: 'upper' },
-  'seated-row-horizontal': { kg: 15, region: 'upper' },
-  'smith-row': { kg: 15, region: 'upper' },
-  pullover: { kg: 10, region: 'upper' },
-  'shoulder-press': { kg: 5, region: 'upper' },
-  'lateral-raise': { kg: 5, region: 'upper' },
-  'reverse-fly': { kg: 5, region: 'upper' },
-  'biceps-curl': { kg: 5, region: 'upper' },
-  'cable-curl': { kg: 5, region: 'upper' },
-  'cable-hammer-curl': { kg: 5, region: 'upper' },
-  'triceps-pushdown': { kg: 5, region: 'upper' },
-  dips: { kg: null, region: 'upper', note: 'Assistance maximale' },
-  'leg-press': { kg: 30, region: 'lower' },
-  'leg-extension': { kg: 10, region: 'lower' },
-  'leg-curl': { kg: 10, region: 'lower' },
-  'seated-calf': { kg: 20, region: 'lower' },
-  'hip-abduction': { kg: 15, region: 'lower' },
-  'hip-adduction': { kg: 15, region: 'lower' },
-  'crunch-machine-mon': { kg: 10, region: 'core' },
-  'crunch-machine-thu': { kg: 10, region: 'core' },
-  'plank-mon': { kg: null, region: 'none', note: 'Aucune charge' },
-  'plank-thu': { kg: null, region: 'none', note: 'Aucune charge' }
+  'lateral-raise-mon': { kg: 5, region: 'upper' },
+  'front-raise-mon': { kg: 5, region: 'upper' },
+  'rear-delt-mon': { kg: 5, region: 'upper' },
+  'military-press-mon': { kg: 5, region: 'upper' },
+  'arms-superset-mon': { kg: 5, region: 'upper' },
+  'core-mon': { kg: 10, region: 'core' },
+
+  'leg-press-tue': { kg: 30, region: 'lower' },
+  'leg-extension-tue': { kg: 10, region: 'lower' },
+  'leg-curl-tue': { kg: 10, region: 'lower' },
+  'hip-thrust-tue': { kg: 20, region: 'lower' },
+  'core-tue': { kg: 10, region: 'core' },
+
+  'bench-press-thu': { kg: 10, region: 'upper' },
+  'incline-press-thu': { kg: 10, region: 'upper' },
+  'dips-thu': { kg: null, region: 'upper', note: 'Assistance maximale' },
+  'arms-superset-thu': { kg: 5, region: 'upper' },
+
+  'lat-pulldown-fri': { kg: 15, region: 'upper' },
+  'seated-row-fri': { kg: 15, region: 'upper' },
+  'lateral-raise-fri': { kg: 5, region: 'upper' },
+  'front-raise-fri': { kg: 5, region: 'upper' },
+  'rear-delt-fri': { kg: 5, region: 'upper' },
+
+  'push-ups-classic-sun': { kg: null, region: 'none', note: 'Poids du corps' },
+  'push-ups-wide-sun': { kg: null, region: 'none', note: 'Poids du corps' },
+  'push-ups-close-sun': { kg: null, region: 'none', note: 'Poids du corps' },
+  'push-ups-incline-sun': { kg: null, region: 'none', note: 'Poids du corps' },
+  'push-ups-decline-sun': { kg: null, region: 'none', note: 'Poids du corps' }
 };
 
 export const FEEDBACK_OPTIONS = [

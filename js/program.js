@@ -2,7 +2,7 @@ let programCache = null;
 
 export async function loadProgram() {
   if (programCache) return programCache;
-  const response = await fetch(`data/program.json?v=43`);
+  const response = await fetch(`data/program.json?v=57`);
   if (!response.ok) throw new Error('Impossible de charger program.json');
   programCache = await response.json();
   return programCache;
@@ -14,14 +14,32 @@ export function getDayById(program, dayId) {
 
 export function getSuggestedDay(program) {
   const map = {
+    0: 'dimanche',
     1: 'lundi',
     2: 'mardi',
+    3: 'mercredi',
     4: 'jeudi',
-    5: 'vendredi'
+    5: 'vendredi',
+    6: 'samedi'
   };
   const today = new Date().getDay();
   const id = map[today] || 'lundi';
   return getDayById(program, id) || program.days[0];
+}
+
+/** Nombre de séries utilisable par le timer (ignore les labels type "100 / jour"). */
+export function setsCount(exercise) {
+  const n = Number(exercise?.sets);
+  return Number.isFinite(n) && n > 0 ? n : 3;
+}
+
+/** Secondes de repos pour le timer : tempsRepos numérique, sinon parse de `rest`. */
+export function restSecondsOf(exercise, fallback = 60) {
+  const direct = Number(exercise?.tempsRepos);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const match = String(exercise?.rest || '').match(/(\d+)\s*s/i);
+  if (match) return Number(match[1]);
+  return Number(fallback) || 60;
 }
 
 export function estimateDayDuration(day, overrides = {}) {
@@ -30,9 +48,9 @@ export function estimateDayDuration(day, overrides = {}) {
   let total = 0;
 
   day.exercises.forEach((ex) => {
-    const sets = Number(ex.sets || 3);
+    const sets = setsCount(ex);
     const work = Number(ex.tempsExercice ?? exerciseSec);
-    const rest = Number(ex.tempsRepos ?? restSec);
+    const rest = restSecondsOf(ex, restSec);
     total += sets * work + Math.max(0, sets - 1) * rest;
   });
 
@@ -47,9 +65,9 @@ export function remainingDuration(day, exerciseIndex, setIndex, phase, remaining
 
   for (let i = exerciseIndex; i < day.exercises.length; i += 1) {
     const ex = day.exercises[i];
-    const sets = Number(ex.sets || 3);
+    const sets = setsCount(ex);
     const work = Number(ex.tempsExercice ?? exerciseSec);
-    const rest = Number(ex.tempsRepos ?? restSec);
+    const rest = restSecondsOf(ex, restSec);
     const startSet = i === exerciseIndex ? setIndex : 1;
 
     for (let s = startSet; s <= sets; s += 1) {
@@ -74,7 +92,7 @@ export function remainingDuration(day, exerciseIndex, setIndex, phase, remaining
 
 export function collectMuscles(day) {
   const set = new Set();
-  day.exercises.forEach((ex) => ex.muscles.forEach((m) => set.add(m)));
+  day.exercises.forEach((ex) => (ex.muscles || []).forEach((m) => set.add(m)));
   return [...set];
 }
 

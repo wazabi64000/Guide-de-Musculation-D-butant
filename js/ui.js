@@ -91,7 +91,7 @@ export function createImageWithFallback(src, alt) {
   img.width = 1200;
   img.height = 750;
   img.sizes = '(max-width: 639px) 100vw, (max-width: 1099px) 50vw, 520px';
-  img.src = `${path}?v=8`;
+  img.src = `${path}?v=19`;
   img.addEventListener('error', () => {
     img.remove();
     if (!wrap.querySelector('.fallback')) {

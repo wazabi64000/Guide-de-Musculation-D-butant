@@ -20,7 +20,7 @@ import {
   resolveTodayWeight,
   buildLoadSummary
 } from './loads.js';
-import { loadProgram, getDayById, getSuggestedDay, estimateDayDuration, collectMuscles, weekProgressKey } from './program.js';
+import { loadProgram, getDayById, getSuggestedDay, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
 import { computeStats, renderHistoryList, renderRecords, drawWeeklyChart } from './stats.js';
 import { bindSettingsPage } from './settings.js';
 import { buildNav, getQueryParam, navigate, currentPage } from './router.js';
@@ -143,7 +143,10 @@ async function renderProgramme() {
         ]),
         done
           ? el('span', { className: 'badge done badge-pop', text: 'Terminé ✓' })
-          : el('span', { className: 'badge', text: `${day.exercises.length} exercices` })
+          : el('span', {
+              className: 'badge',
+              text: day.exercises.length ? `${day.exercises.length} exercices` : 'Repos'
+            })
       ]),
       el('div', { className: 'meta-row' }, [
         el('span', { text: `⏱ ${day.duration} min` }),
@@ -183,24 +186,33 @@ function openDayView(day) {
         }
       }),
       el('h2', { className: 'greeting', style: 'font-size:1.7rem;margin-top:1rem', text: `${day.name}` }),
-      el('p', { className: 'card-text', text: `${day.focus} · ${day.exercises.length} exercices · ${day.duration} min` }),
-      el('div', { className: 'progress-bar', style: 'margin:1rem 0' }, [
-        el('div', { className: 'progress-fill', id: 'day-session-progress', style: 'width:0%' })
-      ]),
-      el('button', {
-        className: 'btn btn-primary',
-        type: 'button',
-        text: 'Commencer la séance',
-        onClick: async () => {
-          try {
-            await music.unlock();
-            await unlockBeeps();
-          } catch {
-            /* continue */
-          }
-          startSession(day);
-        }
-      })
+      el('p', {
+        className: 'card-text',
+        text: day.exercises.length
+          ? `${day.focus} · ${day.exercises.length} exercices · ${day.duration} min`
+          : `${day.focus} — récupération active, marche ou mobilité légère.`
+      }),
+      day.exercises.length
+        ? el('div', { className: 'progress-bar', style: 'margin:1rem 0' }, [
+            el('div', { className: 'progress-fill', id: 'day-session-progress', style: 'width:0%' })
+          ])
+        : null,
+      day.exercises.length
+        ? el('button', {
+            className: 'btn btn-primary',
+            type: 'button',
+            text: 'Commencer la séance',
+            onClick: async () => {
+              try {
+                await music.unlock();
+                await unlockBeeps();
+              } catch {
+                /* continue */
+              }
+              startSession(day);
+            }
+          })
+        : null
     ])
   );
 
@@ -210,7 +222,7 @@ function openDayView(day) {
   });
   panel.appendChild(exerciseList);
 
-  if (getQueryParam('start') === '1') {
+  if (getQueryParam('start') === '1' && day.exercises.length) {
     startSession(day);
   }
 }
@@ -275,10 +287,20 @@ function renderExerciseCard(day, exercise, index) {
     el('div', { className: 'exercise-name', text: `${index + 1}. ${exercise.name}` }),
     muscleChips(exercise.muscles),
     el('div', { className: 'meta-row' }, [
-      el('span', { text: `${exercise.sets} × ${exercise.isHold ? `${exercise.tempsExercice}s` : exercise.reps}` }),
-      el('span', { text: `Repos ${formatRestLabel(exercise.tempsRepos)}` }),
+      el('span', {
+        text: exercise.setsLabel
+          ? `${exercise.setsLabel} · ${exercise.reps}`
+          : `${exercise.sets} × ${exercise.isHold ? `${exercise.tempsExercice}s` : exercise.reps}`
+      }),
+      el('span', {
+        text: `Repos ${exercise.rest || formatRestLabel(exercise.tempsRepos)}`
+      }),
+      exercise.tempo ? el('span', { text: `Tempo ${exercise.tempo}` }) : null,
       exercise.kind ? el('span', { text: exercise.kind }) : null
     ]),
+    exercise.weight
+      ? el('p', { className: 'card-text', style: 'margin:0.35rem 0 0;font-size:0.85rem;opacity:0.85', text: exercise.weight })
+      : null,
     exercise.restNote
       ? el('p', { className: 'card-text', style: 'margin:0.35rem 0 0;font-size:0.85rem;opacity:0.85', text: exercise.restNote })
       : null,
@@ -580,17 +602,20 @@ function createSessionController(day, startIndex = 0) {
   }
 
   function restSeconds(ex) {
-    return Number(ex.tempsRepos ?? settings.defaultRestSeconds ?? program?.meta?.defaultRestSeconds ?? 90);
+    return restSecondsOf(
+      ex,
+      settings.defaultRestSeconds ?? program?.meta?.defaultRestSeconds ?? 60
+    );
   }
 
   function afterExerciseRestSeconds() {
-    return Number(program?.meta?.restAfterExerciseSeconds ?? 90);
+    return Number(program?.meta?.restAfterExerciseSeconds ?? 60);
   }
 
   function updateProgress() {
-    const total = day.exercises.reduce((s, ex) => s + Number(ex.sets || 3), 0);
+    const total = day.exercises.reduce((s, ex) => s + setsCount(ex), 0);
     let done = 0;
-    for (let i = 0; i < exerciseIndex; i += 1) done += Number(day.exercises[i].sets || 3);
+    for (let i = 0; i < exerciseIndex; i += 1) done += setsCount(day.exercises[i]);
     done += Math.max(0, setIndex - 1);
     if (mode === 'rest') done += 1;
     progressEl.style.width = `${Math.min(100, Math.round((done / Math.max(1, total)) * 100))}%`;
@@ -601,7 +626,7 @@ function createSessionController(day, startIndex = 0) {
     const betweenExercises = afterExerciseRestSeconds();
     for (let i = exerciseIndex; i < day.exercises.length; i += 1) {
       const ex = day.exercises[i];
-      const sets = Number(ex.sets || 3);
+      const sets = setsCount(ex);
       const startSet = i === exerciseIndex ? setIndex : 1;
       for (let s = startSet; s <= sets; s += 1) {
         if (i === exerciseIndex && s === setIndex) {
@@ -681,7 +706,7 @@ function createSessionController(day, startIndex = 0) {
     setSessionBackground(exercise);
     updateProgress();
 
-    const sets = Number(exercise.sets || 3);
+    const sets = setsCount(exercise);
     const label = exercise.isHold
       ? `Série ${setIndex}/${sets} — maintien`
       : `Série ${setIndex}/${sets} — ${exercise.reps} reps`;
@@ -720,7 +745,7 @@ function createSessionController(day, startIndex = 0) {
     mode = 'rest';
     restKind = kind;
 
-    const sets = Number(exercise?.sets || 3);
+    const sets = setsCount(exercise);
     let rest;
     let label;
     let nextName = '';
@@ -795,7 +820,7 @@ function createSessionController(day, startIndex = 0) {
       return;
     }
 
-    const sets = Number(exercise.sets || 3);
+    const sets = setsCount(exercise);
 
     if (setIndex < sets) {
       // Repos court entre séries
@@ -954,7 +979,7 @@ function createSessionController(day, startIndex = 0) {
             phaseEl.textContent = restKind === 'between-exercises' ? 'Repos entre exercices' : 'Repos';
             subEl.textContent = restKind === 'between-exercises'
               ? `Repos ${formatRestLabel(secs)} — ${exercise?.name || 'suivant'}`
-              : `Repos ${formatRestLabel(secs)} — série ${setIndex}/${exercise.sets}`;
+              : `Repos ${formatRestLabel(secs)} — série ${setIndex}/${setsCount(exercise)}`;
             ring.classList.add('rest');
             if (setDoneBtn) setDoneBtn.classList.add('hidden');
             void music.play('rest', { loop: true });
@@ -963,7 +988,7 @@ function createSessionController(day, startIndex = 0) {
           } else {
             if (!exercise) break;
             phaseEl.textContent = 'Exercice';
-            subEl.textContent = `Série ${setIndex}/${exercise.sets}`;
+            subEl.textContent = `Série ${setIndex}/${setsCount(exercise)}`;
             ring.classList.remove('rest');
             if (setDoneBtn) setDoneBtn.classList.remove('hidden');
             void music.play('exercise', { loop: true, setIndex });
@@ -1172,7 +1197,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=44');
+      const registration = await navigator.serviceWorker.register('sw.js?v=57');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
