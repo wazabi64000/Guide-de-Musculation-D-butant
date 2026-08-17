@@ -50,65 +50,6 @@
       "color": "#4DA3FF",
       "exercises": [
         {
-          "id": "lateral-raise-mon",
-          "name": "Élévation latérale",
-          "image": "images/lateral-raise.gif",
-          "muscles": [
-            "Épaules",
-            "Deltoïde moyen"
-          ],
-          "description": "Isolation du deltoïde moyen pour élargir les épaules.",
-          "howTo": "Coudes légèrement fléchis. Montez les bras sur les côtés jusqu’à l’horizontale, puis redescendez en contrôlant.",
-          "breathing": "Expirez en montant, inspirez en descendant.",
-          "mistakes": "Élan du corps, monter trop haut, charge trop lourde.",
-          "sets": 5,
-          "reps": "Max",
-          "rest": "60s",
-          "tempo": "2-0-1-1",
-          "tempsExercice": 40,
-          "tempsRepos": 60,
-          "kind": "isolation"
-        },
-        {
-          "id": "front-raise-mon",
-          "name": "Élévation frontale",
-          "image": "images/front-raise.gif",
-          "muscles": [
-            "Épaules",
-            "Deltoïde antérieur"
-          ],
-          "description": "Isolation du deltoïde antérieur.",
-          "howTo": "Bras tendus devant vous, montez jusqu’à la hauteur des épaules sans balancer le buste, puis redescendez lentement.",
-          "breathing": "Expirez en montant, inspirez en descendant.",
-          "mistakes": "Balancier, verrouiller les coudes, charge trop lourde.",
-          "sets": 5,
-          "reps": "Max",
-          "rest": "60s",
-          "tempo": "2-0-1-1",
-          "tempsExercice": 40,
-          "tempsRepos": 60,
-          "kind": "isolation"
-        },
-        {
-          "id": "rear-delt-mon",
-          "name": "Arrière épaule",
-          "image": "images/rear-delt.gif",
-          "muscles": [
-            "Arrière des épaules"
-          ],
-          "description": "Renforce l’arrière des épaules et la posture.",
-          "howTo": "Ouvrez les bras en serrant les omoplates, pause courte, puis revenez contrôlé.",
-          "breathing": "Expirez à l’effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement trop rapide, épaules remontées.",
-          "sets": 5,
-          "reps": "Max",
-          "rest": "60s",
-          "tempo": "2-0-1-1",
-          "tempsExercice": 40,
-          "tempsRepos": 60,
-          "kind": "isolation"
-        },
-        {
           "id": "military-press-mon",
           "name": "Développé militaire",
           "image": "images/shoulder-press.gif",

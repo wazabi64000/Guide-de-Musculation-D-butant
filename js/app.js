@@ -711,7 +711,7 @@ function createSessionController(day, startIndex = 0) {
       ? `Série ${setIndex}/${sets} — maintien`
       : `Série ${setIndex}/${sets} — ${exercise.reps} reps`;
 
-    await music.play('exercise', { loop: true, setIndex });
+    await music.play('exercise', { loop: true, exerciseId: exercise.id });
     const ok = await runCountdown(label);
     if (!ok) {
       busy = false;
@@ -727,7 +727,7 @@ function createSessionController(day, startIndex = 0) {
     }
     // Reprend l'exercice après le countdown (le repos a pu être coupé)
     await music.stop();
-    await music.play('exercise', { loop: true, setIndex });
+    await music.play('exercise', { loop: true, exerciseId: exercise.id });
     timer.start(workSeconds(exercise));
     updateRemaining(workSeconds(exercise));
     busy = false;
@@ -991,7 +991,7 @@ function createSessionController(day, startIndex = 0) {
             subEl.textContent = `Série ${setIndex}/${setsCount(exercise)}`;
             ring.classList.remove('rest');
             if (setDoneBtn) setDoneBtn.classList.remove('hidden');
-            void music.play('exercise', { loop: true, setIndex });
+            void music.play('exercise', { loop: true, exerciseId: exercise.id });
             timer.start(workSeconds(exercise));
             busy = false;
           }
@@ -1197,7 +1197,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=57');
+      const registration = await navigator.serviceWorker.register('sw.js?v=59');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

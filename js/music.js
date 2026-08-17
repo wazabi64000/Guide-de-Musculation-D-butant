@@ -1,6 +1,9 @@
 import { getCachedSetting } from './storage.js';
 
-/** Une piste d'exercice par série (cycle si plus de séries que de pistes). */
+/**
+ * Playlist entraînement uniquement (le repos a sa propre liste).
+ * Chaque exercice de la semaine a une piste stable (cycle si + d'exercices que de pistes).
+ */
 const EXERCISE_TRACKS = [
   'music/exercise-1.mp3',
   'music/exercise-2.mp3',
@@ -9,7 +12,35 @@ const EXERCISE_TRACKS = [
   'music/exercise-5.mp3',
   'music/exercise-6.mp3',
   'music/exercise-7.mp3',
-  'music/exercise-8.mp3'
+  'music/exercise-8.mp3',
+  'music/exercise-9.mp3',
+  'music/exercise-10.mp3'
+];
+
+/** Ordre fixe des exercices de la semaine → même musique à chaque séance. */
+const EXERCISE_IDS_ORDER = [
+  'military-press-mon',
+  'arms-superset-mon',
+  'core-mon',
+  'leg-press-tue',
+  'leg-extension-tue',
+  'leg-curl-tue',
+  'hip-thrust-tue',
+  'core-tue',
+  'bench-press-thu',
+  'incline-press-thu',
+  'dips-thu',
+  'arms-superset-thu',
+  'lat-pulldown-fri',
+  'seated-row-fri',
+  'lateral-raise-fri',
+  'front-raise-fri',
+  'rear-delt-fri',
+  'push-ups-classic-sun',
+  'push-ups-wide-sun',
+  'push-ups-close-sun',
+  'push-ups-incline-sun',
+  'push-ups-decline-sun'
 ];
 
 /** Playlist repos : change à chaque phase de repos. */
@@ -29,6 +60,17 @@ const REST_TRACKS = [
 ];
 
 const FINISH_TRACK = 'music/finish.mp3';
+
+function trackForExerciseId(exerciseId) {
+  const n = EXERCISE_TRACKS.length;
+  const idx = EXERCISE_IDS_ORDER.indexOf(String(exerciseId || ''));
+  if (idx >= 0) return EXERCISE_TRACKS[idx % n];
+  // Fallback stable si nouvel id
+  let hash = 0;
+  const id = String(exerciseId || 'default');
+  for (let i = 0; i < id.length; i += 1) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return EXERCISE_TRACKS[hash % n];
+}
 
 function makeAudio(src) {
   const audio = new Audio();
@@ -114,11 +156,9 @@ class MusicPlayer {
     }
   }
 
-  resolveSrc(key, { setIndex } = {}) {
+  resolveSrc(key, { exerciseId } = {}) {
     if (key === 'exercise') {
-      const n = EXERCISE_TRACKS.length;
-      const i = Math.max(0, (Number(setIndex) || 1) - 1) % n;
-      return EXERCISE_TRACKS[i];
+      return trackForExerciseId(exerciseId);
     }
     if (key === 'rest') {
       // Nouvelle piste uniquement à l'entrée en repos (pas sur le 2e play de la même phase)
@@ -132,10 +172,10 @@ class MusicPlayer {
     return null;
   }
 
-  async play(key, { loop = true, setIndex } = {}) {
+  async play(key, { loop = true, exerciseId } = {}) {
     if (!this.isEnabled() || !this.players[key]) return false;
 
-    const src = this.resolveSrc(key, { setIndex });
+    const src = this.resolveSrc(key, { exerciseId });
     if (!src) return false;
 
     const token = ++this.playToken;
@@ -144,7 +184,7 @@ class MusicPlayer {
 
     const audio = this.players[key];
 
-    // Même piste déjà en cours
+    // Même piste déjà en cours (ex. séries suivantes du même exercice)
     if (this.currentKey === key && this.currentSrc === src && !audio.paused) {
       this.duck(false);
       this.applyVolume(key);

@@ -7,9 +7,6 @@ export const LOAD_TIP =
 
 /** @type {Record<string, { kg: number|null, region: 'upper'|'lower'|'core'|'none', note?: string }>} */
 const DEFAULTS = {
-  'lateral-raise-mon': { kg: 5, region: 'upper' },
-  'front-raise-mon': { kg: 5, region: 'upper' },
-  'rear-delt-mon': { kg: 5, region: 'upper' },
   'military-press-mon': { kg: 5, region: 'upper' },
   'arms-superset-mon': { kg: 5, region: 'upper' },
   'core-mon': { kg: 10, region: 'core' },
