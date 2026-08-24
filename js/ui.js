@@ -73,6 +73,16 @@ export function muscleChips(muscles = []) {
   );
 }
 
+/** Badge matériel : POIDS LIBRE ou MACHINE */
+export function equipmentBadge(equipmentType) {
+  const type = String(equipmentType || '').toUpperCase();
+  const isMachine = type === 'MACHINE';
+  return el('span', {
+    className: `equipment-badge ${isMachine ? 'equipment-machine' : 'equipment-free'}`,
+    text: isMachine ? 'MACHINE' : 'POIDS LIBRE'
+  });
+}
+
 export function createImageWithFallback(src, alt) {
   const wrap = el('div', { className: 'exercise-media' });
   const path = String(src || '').replace(/^\//, '');

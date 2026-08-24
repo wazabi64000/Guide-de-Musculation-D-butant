@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muscu-debutant-v59';
+const CACHE_NAME = 'muscu-debutant-v71';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -29,6 +29,12 @@ const CORE_ASSETS = [
   './icons/icon-512.png'
 ];
 
+function cachePutSafe(cache, request, response) {
+  return cache.put(request, response).catch(() => {
+    /* Quota dépassé ou fichier trop lourd — ignorer */
+  });
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
@@ -56,26 +62,29 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  const isOpaqueAsset =
+  // Musique : ne pas intercepter (fichiers lourds, lecture directe navigateur)
+  if (url.pathname.includes('/music/')) {
+    return;
+  }
+
+  const isNetworkFirst =
     url.pathname.includes('/images/') ||
-    url.pathname.includes('/music/') ||
     url.pathname.endsWith('.js') ||
     url.pathname.endsWith('.json') ||
     url.pathname.endsWith('.css') ||
     url.pathname.endsWith('.html');
 
-  // Network-first for app code/data/images so updates show immediately
-  if (isOpaqueAsset) {
+  if (isNetworkFirst) {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            caches.open(CACHE_NAME).then((cache) => cachePutSafe(cache, request, clone));
           }
           return response;
         })
-        .catch(() => caches.match(request))
+        .catch(() => caches.match(request).then((cached) => cached || Response.error()))
     );
     return;
   }
@@ -86,7 +95,7 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            caches.open(CACHE_NAME).then((cache) => cachePutSafe(cache, request, clone));
           }
           return response;
         })

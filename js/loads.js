@@ -7,32 +7,37 @@ export const LOAD_TIP =
 
 /** @type {Record<string, { kg: number|null, region: 'upper'|'lower'|'core'|'none', note?: string }>} */
 const DEFAULTS = {
-  'military-press-mon': { kg: 5, region: 'upper' },
-  'arms-superset-mon': { kg: 5, region: 'upper' },
-  'core-mon': { kg: 10, region: 'core' },
+  // Jour 1 — Full Body A
+  'fb-a-bench': { kg: 10, region: 'upper' },
+  'fb-a-lat-pulldown': { kg: 15, region: 'upper' },
+  'fb-a-leg-press': { kg: 30, region: 'lower' },
+  'fb-a-military': { kg: 5, region: 'upper' },
+  'fb-a-woodchopper': { kg: 10, region: 'core' },
+  'fb-a-dips': { kg: null, region: 'upper', note: 'Assistance maximale ou poids du corps' },
 
-  'leg-press-tue': { kg: 30, region: 'lower' },
-  'leg-extension-tue': { kg: 10, region: 'lower' },
-  'leg-curl-tue': { kg: 10, region: 'lower' },
-  'hip-thrust-tue': { kg: 20, region: 'lower' },
-  'core-tue': { kg: 10, region: 'core' },
+  // Jour 2 — Haut (Pecs / Épaules)
+  'up-b-incline': { kg: 10, region: 'upper' },
+  'up-b-cable-fly': { kg: 8, region: 'upper' },
+  'up-b-lat-raise': { kg: 5, region: 'upper' },
+  'up-b-rear-delt': { kg: 5, region: 'upper' },
+  'up-b-curl': { kg: 10, region: 'upper' },
+  'up-b-triceps': { kg: 10, region: 'upper' },
 
-  'bench-press-thu': { kg: 10, region: 'upper' },
-  'incline-press-thu': { kg: 10, region: 'upper' },
-  'dips-thu': { kg: null, region: 'upper', note: 'Assistance maximale' },
-  'arms-superset-thu': { kg: 5, region: 'upper' },
+  // Jour 4 — Full Body B
+  'fb-b-rdl': { kg: 12, region: 'lower' },
+  'fb-b-row': { kg: 15, region: 'upper' },
+  'fb-b-cable-lat': { kg: 5, region: 'upper' },
+  'fb-b-lunge': { kg: 8, region: 'lower' },
+  'fb-b-side-plank': { kg: null, region: 'core', note: 'Poids du corps' },
+  'fb-b-push-close': { kg: null, region: 'none', note: 'Poids du corps' },
 
-  'lat-pulldown-fri': { kg: 15, region: 'upper' },
-  'seated-row-fri': { kg: 15, region: 'upper' },
-  'lateral-raise-fri': { kg: 5, region: 'upper' },
-  'front-raise-fri': { kg: 5, region: 'upper' },
-  'rear-delt-fri': { kg: 5, region: 'upper' },
-
-  'push-ups-classic-sun': { kg: null, region: 'none', note: 'Poids du corps' },
-  'push-ups-wide-sun': { kg: null, region: 'none', note: 'Poids du corps' },
-  'push-ups-close-sun': { kg: null, region: 'none', note: 'Poids du corps' },
-  'push-ups-incline-sun': { kg: null, region: 'none', note: 'Poids du corps' },
-  'push-ups-decline-sun': { kg: null, region: 'none', note: 'Poids du corps' }
+  // Jour 5 — Bas & Obliques / Cardio
+  'low-c-leg-ext': { kg: 10, region: 'lower' },
+  'low-c-leg-curl': { kg: 10, region: 'lower' },
+  'low-c-calf-press': { kg: 30, region: 'lower' },
+  'low-c-russian': { kg: 5, region: 'core' },
+  'low-c-leg-raise': { kg: null, region: 'core', note: 'Poids du corps' },
+  'low-c-cardio': { kg: null, region: 'none', note: 'Cardio — pas de charge' }
 };
 
 export const FEEDBACK_OPTIONS = [
@@ -63,13 +68,6 @@ export function formatDelta(value) {
 
 /**
  * Calcule la prochaine charge recommandée.
- * @param {object} opts
- * @param {number} opts.usedWeight
- * @param {string} opts.feedback
- * @param {'upper'|'lower'|'core'|'none'} opts.region
- * @param {boolean} opts.setsComplete
- * @param {boolean} opts.pain
- * @param {boolean} opts.badForm
  */
 export function nextRecommendedWeight({
   usedWeight,
@@ -98,7 +96,6 @@ export function nextRecommendedWeight({
     delta = -5;
   }
 
-  // Sécurité : jamais d'augmentation si séries incomplètes, douleur ou mauvaise technique
   if (delta > 0 && (!setsComplete || pain || badForm)) {
     delta = 0;
   }
@@ -107,10 +104,6 @@ export function nextRecommendedWeight({
   return Math.max(0, next);
 }
 
-/**
- * Charge à proposer aujourd'hui dans le champ.
- * Priorité : recommandation adaptée > base débutant.
- */
 export function resolveTodayWeight(exerciseId, saved) {
   const base = getDefaultLoad(exerciseId);
   if (base.kg === null) {

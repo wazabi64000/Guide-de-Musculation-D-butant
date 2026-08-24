@@ -1,101 +1,47 @@
 import { getCachedSetting } from './storage.js';
 
-/**
- * Playlist entraînement uniquement (le repos a sa propre liste).
- * Chaque exercice de la semaine a une piste stable (cycle si + d'exercices que de pistes).
- */
-const EXERCISE_TRACKS = [
-  'music/exercise-1.mp3',
-  'music/exercise-2.mp3',
-  'music/exercise-3.mp3',
-  'music/exercise-4.mp3',
-  'music/exercise-5.mp3',
-  'music/exercise-6.mp3',
-  'music/exercise-7.mp3',
-  'music/exercise-8.mp3',
-  'music/exercise-9.mp3',
-  'music/exercise-10.mp3'
-];
+/** Playlist unique : enchaînement continu + boucle (exercice et repos). */
+let SESSION_TRACKS = [];
+let SESSION_LABELS = [];
+let SESSION_LOOP = true;
+let playlistPromise = null;
 
-/** Ordre fixe des exercices de la semaine → même musique à chaque séance. */
-const EXERCISE_IDS_ORDER = [
-  'military-press-mon',
-  'arms-superset-mon',
-  'core-mon',
-  'leg-press-tue',
-  'leg-extension-tue',
-  'leg-curl-tue',
-  'hip-thrust-tue',
-  'core-tue',
-  'bench-press-thu',
-  'incline-press-thu',
-  'dips-thu',
-  'arms-superset-thu',
-  'lat-pulldown-fri',
-  'seated-row-fri',
-  'lateral-raise-fri',
-  'front-raise-fri',
-  'rear-delt-fri',
-  'push-ups-classic-sun',
-  'push-ups-wide-sun',
-  'push-ups-close-sun',
-  'push-ups-incline-sun',
-  'push-ups-decline-sun'
-];
-
-/** Playlist repos : change à chaque phase de repos. */
-const REST_TRACKS = [
-  'music/rest-1.mp3',
-  'music/rest-2.mp3',
-  'music/rest-3.mp3',
-  'music/rest-4.mp3',
-  'music/rest-5.mp3',
-  'music/rest-6.mp3',
-  'music/rest-7.mp3',
-  'music/rest-8.mp3',
-  'music/rest-9.mp3',
-  'music/rest-10.mp3',
-  'music/rest-11.mp3',
-  'music/rest-12.mp3'
-];
-
-const FINISH_TRACK = 'music/finish.mp3';
-
-function trackForExerciseId(exerciseId) {
-  const n = EXERCISE_TRACKS.length;
-  const idx = EXERCISE_IDS_ORDER.indexOf(String(exerciseId || ''));
-  if (idx >= 0) return EXERCISE_TRACKS[idx % n];
-  // Fallback stable si nouvel id
-  let hash = 0;
-  const id = String(exerciseId || 'default');
-  for (let i = 0; i < id.length; i += 1) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  return EXERCISE_TRACKS[hash % n];
+async function loadPlaylist() {
+  if (!playlistPromise) {
+    playlistPromise = fetch('music/playlist.json?v=71')
+      .then((res) => (res.ok ? res.json() : { session: [] }))
+      .then((data) => {
+        SESSION_TRACKS = Array.isArray(data?.session) ? data.session.filter(Boolean) : [];
+        SESSION_LABELS = Array.isArray(data?.labels) ? data.labels : [];
+        SESSION_LOOP = data?.loop !== false;
+        return SESSION_TRACKS;
+      })
+      .catch(() => {
+        SESSION_TRACKS = [];
+        SESSION_LABELS = [];
+        return [];
+      });
+  }
+  return playlistPromise;
 }
 
-function makeAudio(src) {
+function makeAudio() {
   const audio = new Audio();
   audio.preload = 'auto';
   audio.playsInline = true;
-  audio.loop = true;
-  if (src) audio.src = src;
+  audio.loop = false;
   return audio;
 }
 
 class MusicPlayer {
   constructor() {
-    this.players = {
-      exercise: makeAudio(EXERCISE_TRACKS[0]),
-      rest: makeAudio(REST_TRACKS[0]),
-      finish: makeAudio(FINISH_TRACK)
-    };
-    this.players.finish.loop = false;
-    this.currentKey = null;
+    this.audio = makeAudio();
     this.currentSrc = null;
     this.unlocked = false;
     this.duckLevel = 1;
     this.playToken = 0;
-    this.restCursor = 0;
-    this.restIndex = 0;
+    this.sessionCursor = 0;
+    this.sessionActive = false;
   }
 
   isEnabled() {
@@ -110,36 +56,100 @@ class MusicPlayer {
     return Math.min(1, Math.max(0, base * this.duckLevel));
   }
 
-  applyVolume(key = this.currentKey) {
-    const audio = key ? this.players[key] : null;
-    if (!audio) return;
-    audio.muted = false;
-    audio.volume = this.targetVolume();
+  applyVolume() {
+    this.audio.muted = false;
+    this.audio.volume = this.targetVolume();
   }
 
-  stopAll() {
-    Object.entries(this.players).forEach(([key, audio]) => {
-      try {
-        audio.pause();
-        audio.currentTime = 0;
-      } catch {
-        /* ignore */
+  nextSrc() {
+    if (!SESSION_TRACKS.length) return null;
+    if (SESSION_LOOP && this.sessionCursor >= SESSION_TRACKS.length) {
+      this.sessionCursor = 0;
+    }
+    const src = SESSION_TRACKS[this.sessionCursor % SESSION_TRACKS.length];
+    this.sessionCursor += 1;
+    return src;
+  }
+
+  bindChain(token) {
+    this.audio.onended = () => {
+      if (token !== this.playToken || !this.sessionActive) return;
+      void this.chainNext(token);
+    };
+  }
+
+  async chainNext(token) {
+    if (!this.isEnabled() || token !== this.playToken || !this.sessionActive) return;
+    if (!SESSION_TRACKS.length) return;
+
+    if (SESSION_LOOP && this.sessionCursor >= SESSION_TRACKS.length) {
+      this.sessionCursor = 0;
+    }
+
+    for (let attempt = 0; attempt < SESSION_TRACKS.length; attempt += 1) {
+      const src = this.nextSrc();
+      if (!src) return;
+      const ok = await this.playSrc(src, token);
+      if (ok) return;
+    }
+  }
+
+  async playSrc(src, token) {
+    if (!this.isEnabled() || !src || token !== this.playToken) return false;
+
+    if (this.currentSrc !== src || !this.audio.src.includes(src.split('/').pop())) {
+      this.audio.src = src;
+    }
+    this.currentSrc = src;
+    this.audio.loop = false;
+    this.duck(false);
+    this.applyVolume();
+    this.bindChain(token);
+
+    try {
+      this.audio.currentTime = 0;
+    } catch {
+      /* ignore */
+    }
+
+    try {
+      await this.audio.play();
+      if (token !== this.playToken) {
+        this.audio.pause();
+        return false;
       }
-      audio.loop = key !== 'finish';
-    });
-    this.currentKey = null;
+      return true;
+    } catch (error) {
+      console.warn('Music play failed:', src, error);
+      return false;
+    }
+  }
+
+  stopPlayback() {
+    try {
+      this.audio.onended = null;
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    } catch {
+      /* ignore */
+    }
     this.currentSrc = null;
   }
 
   async unlock() {
+    await loadPlaylist();
     if (this.unlocked) return true;
     try {
-      const audio = this.players.exercise;
-      audio.volume = 0.001;
-      audio.loop = true;
-      await audio.play();
-      audio.pause();
-      audio.currentTime = 0;
+      const src = SESSION_TRACKS[0];
+      if (!src) {
+        this.unlocked = true;
+        return false;
+      }
+      this.audio.src = src;
+      this.audio.volume = 0.001;
+      await this.audio.play();
+      this.audio.pause();
+      this.audio.currentTime = 0;
       this.unlocked = true;
       return true;
     } catch (error) {
@@ -151,109 +161,96 @@ class MusicPlayer {
 
   duck(on) {
     this.duckLevel = on ? 0.18 : 1;
-    if (this.currentKey && this.players[this.currentKey] && !this.players[this.currentKey].paused) {
-      this.applyVolume(this.currentKey);
-    }
+    if (!this.audio.paused) this.applyVolume();
   }
 
-  resolveSrc(key, { exerciseId } = {}) {
-    if (key === 'exercise') {
-      return trackForExerciseId(exerciseId);
-    }
-    if (key === 'rest') {
-      // Nouvelle piste uniquement à l'entrée en repos (pas sur le 2e play de la même phase)
-      if (this.currentKey !== 'rest') {
-        this.restIndex = this.restCursor % REST_TRACKS.length;
-        this.restCursor += 1;
-      }
-      return REST_TRACKS[this.restIndex];
-    }
-    if (key === 'finish') return FINISH_TRACK;
-    return null;
-  }
+  /** Démarre la playlist séance (ne coupe pas si déjà en cours). */
+  async startSession() {
+    if (!this.isEnabled()) return false;
+    await loadPlaylist();
+    if (!SESSION_TRACKS.length) return false;
 
-  async play(key, { loop = true, exerciseId } = {}) {
-    if (!this.isEnabled() || !this.players[key]) return false;
-
-    const src = this.resolveSrc(key, { exerciseId });
-    if (!src) return false;
+    if (this.sessionActive && !this.audio.paused) {
+      return true;
+    }
 
     const token = ++this.playToken;
     await this.unlock();
     if (token !== this.playToken) return false;
 
-    const audio = this.players[key];
+    this.sessionActive = true;
 
-    // Même piste déjà en cours (ex. séries suivantes du même exercice)
-    if (this.currentKey === key && this.currentSrc === src && !audio.paused) {
-      this.duck(false);
-      this.applyVolume(key);
-      return true;
+    for (let attempt = 0; attempt < SESSION_TRACKS.length; attempt += 1) {
+      const src = this.nextSrc();
+      if (!src) return false;
+      const ok = await this.playSrc(src, token);
+      if (ok) return true;
     }
+    return false;
+  }
 
-    // Coupe les autres slots
-    Object.entries(this.players).forEach(([k, el]) => {
-      if (k === key) return;
+  /** Recommence la playlist depuis le début (bouton Recommencer). */
+  async restartSession() {
+    this.playToken += 1;
+    this.stopPlayback();
+    this.sessionCursor = 0;
+    this.sessionActive = false;
+    return this.startSession();
+  }
+
+  /** Fin de séance — coupe tout. */
+  async stop() {
+    this.playToken += 1;
+    this.sessionActive = false;
+    this.duck(false);
+    this.stopPlayback();
+  }
+
+  togglePause(paused) {
+    if (!this.sessionActive) return;
+    if (paused) {
       try {
-        el.pause();
-        el.currentTime = 0;
+        this.audio.pause();
       } catch {
         /* ignore */
       }
-    });
-
-    if (token !== this.playToken) return false;
-
-    if (this.currentSrc !== src || !audio.src.includes(src.split('/').pop())) {
-      audio.src = src;
+    } else {
+      this.audio.play().catch(() => {});
     }
-
-    this.currentKey = key;
-    this.currentSrc = src;
-    audio.loop = Boolean(loop);
-    this.duck(false);
-    this.applyVolume(key);
-
-    try {
-      audio.currentTime = 0;
-    } catch {
-      /* ignore */
-    }
-
-    try {
-      await audio.play();
-      if (token !== this.playToken) {
-        audio.pause();
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.warn('Music play failed:', key, src, error);
-      return false;
-    }
-  }
-
-  async stop() {
-    this.playToken += 1;
-    this.duck(false);
-    this.stopAll();
   }
 
   setMuted(muted) {
-    const m = Boolean(muted);
-    Object.values(this.players).forEach((audio) => {
-      audio.muted = m;
-    });
-    if (!m && this.currentKey) this.applyVolume(this.currentKey);
+    this.audio.muted = Boolean(muted);
+    if (!muted) this.applyVolume();
   }
 
   setVolume() {
-    if (this.currentKey) this.applyVolume(this.currentKey);
+    this.applyVolume();
   }
 
   isPlaying() {
-    const audio = this.currentKey ? this.players[this.currentKey] : null;
-    return Boolean(audio && !audio.paused);
+    return Boolean(this.sessionActive && !this.audio.paused);
+  }
+
+  async getPlaylistInfo() {
+    await loadPlaylist();
+    return {
+      sessionCount: SESSION_TRACKS.length,
+      labels: SESSION_LABELS
+    };
+  }
+
+  reloadPlaylist() {
+    playlistPromise = null;
+    SESSION_TRACKS = [];
+    SESSION_LABELS = [];
+    return loadPlaylist();
+  }
+
+  /** @deprecated Compatibilité — utilise startSession. */
+  async play(key) {
+    if (key === 'exercise' || key === 'session') return this.startSession();
+    return false;
   }
 }
 

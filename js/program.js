@@ -2,7 +2,7 @@ let programCache = null;
 
 export async function loadProgram() {
   if (programCache) return programCache;
-  const response = await fetch(`data/program.json?v=59`);
+  const response = await fetch(`data/program.json?v=71`);
   if (!response.ok) throw new Error('Impossible de charger program.json');
   programCache = await response.json();
   return programCache;
@@ -14,17 +14,21 @@ export function getDayById(program, dayId) {
 
 export function getSuggestedDay(program) {
   const map = {
-    0: 'dimanche',
-    1: 'lundi',
-    2: 'mardi',
-    3: 'mercredi',
-    4: 'jeudi',
-    5: 'vendredi',
-    6: 'samedi'
+    0: 'jour1',
+    1: 'jour1',
+    2: 'jour2',
+    3: 'jour3',
+    4: 'jour4',
+    5: 'jour5',
+    6: 'jour6'
   };
   const today = new Date().getDay();
-  const id = map[today] || 'lundi';
+  const id = map[today] || 'jour1';
   return getDayById(program, id) || program.days[0];
+}
+
+export function isRestDay(day) {
+  return Boolean(day?.isRestDay) || !day?.exercises?.length;
 }
 
 /** Nombre de séries utilisable par le timer (ignore les labels type "100 / jour"). */

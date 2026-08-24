@@ -20,13 +20,13 @@ import {
   resolveTodayWeight,
   buildLoadSummary
 } from './loads.js';
-import { loadProgram, getDayById, getSuggestedDay, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
+import { loadProgram, getDayById, getSuggestedDay, isRestDay, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
 import { computeStats, renderHistoryList, renderRecords, drawWeeklyChart } from './stats.js';
 import { bindSettingsPage } from './settings.js';
 import { buildNav, getQueryParam, navigate, currentPage } from './router.js';
 import { music } from './music.js';
 import { Timer, formatTime, formatDuration } from './timer.js';
-import { playBeep, unlockBeeps } from './beep.js';
+import { playCountdownBeep, unlockBeeps } from './beep.js';
 import { initWakeLock } from './wake.js';
 import {
   $,
@@ -35,6 +35,7 @@ import {
   greetingForNow,
   quoteOfDay,
   muscleChips,
+  equipmentBadge,
   createImageWithFallback,
   enterFullscreen,
   exitFullscreen,
@@ -106,7 +107,8 @@ async function renderHome() {
   const goal = program.meta.goal === 'hypertrophie'
     ? `${level}Hypertrophie · repos adaptés (1–2 min 30)`
     : program.meta.subtitle;
-  $('#program-sub').textContent = `${suggested.name} — ${suggested.focus} · ~${suggested.duration} min · ${goal}`;
+  const durationLabel = day.durationLabel || `${day.duration} min`;
+  $('#program-sub').textContent = `${suggested.name} — ${suggested.focus} · ${durationLabel} · ${goal}`;
 
   const fill = $('#home-progress-fill');
   if (fill) fill.style.width = `${stats.progression}%`;
@@ -145,7 +147,9 @@ async function renderProgramme() {
           ? el('span', { className: 'badge done badge-pop', text: 'Terminé ✓' })
           : el('span', {
               className: 'badge',
-              text: day.exercises.length ? `${day.exercises.length} exercices` : 'Repos'
+              text: isRestDay(day)
+                ? 'Repos'
+                : `${day.exercises.length} exercices · ${day.durationLabel || `${day.duration} min`}`
             })
       ]),
       el('div', { className: 'meta-row' }, [
@@ -188,9 +192,9 @@ function openDayView(day) {
       el('h2', { className: 'greeting', style: 'font-size:1.7rem;margin-top:1rem', text: `${day.name}` }),
       el('p', {
         className: 'card-text',
-        text: day.exercises.length
-          ? `${day.focus} · ${day.exercises.length} exercices · ${day.duration} min`
-          : `${day.focus} — récupération active, marche ou mobilité légère.`
+        text: isRestDay(day)
+          ? `${day.focus} — récupération active, marche ou mobilité légère.`
+          : `${day.focus} · ${day.exercises.length} exercices · ${day.durationLabel || `${day.duration} min`}`
       }),
       day.exercises.length
         ? el('div', { className: 'progress-bar', style: 'margin:1rem 0' }, [
@@ -284,7 +288,13 @@ function renderExerciseCard(day, exercise, index) {
   });
 
   body.append(
-    el('div', { className: 'exercise-name', text: `${index + 1}. ${exercise.name}` }),
+    el('div', { className: 'exercise-name-row' }, [
+      el('div', { className: 'exercise-name', text: `${index + 1}. ${exercise.name}` }),
+      exercise.equipmentType ? equipmentBadge(exercise.equipmentType) : null
+    ]),
+    exercise.target
+      ? el('p', { className: 'exercise-target', text: `Cible : ${exercise.target}` })
+      : null,
     muscleChips(exercise.muscles),
     el('div', { className: 'meta-row' }, [
       el('span', {
@@ -561,7 +571,6 @@ function createSessionController(day, startIndex = 0) {
   let destroyed = false;
   let finishing = false;
   let busy = false;
-  let countdownToken = 0;
   /** @type {'between-sets'|'between-exercises'} */
   let restKind = 'between-sets';
 
@@ -575,26 +584,76 @@ function createSessionController(day, startIndex = 0) {
       updateRemaining(state.remaining);
     },
     onEndingBeep: (second) => {
-      playBeep({
-        frequency: second === 1 ? 980 : 700,
-        duration: 0.1,
-        volume: 0.18
-      });
+      playCountdownBeep(second, { mode: mode === 'rest' ? 'rest' : 'work' });
       if (mode === 'rest') {
-        subEl.textContent = second === 1 ? 'Série suivante…' : `Reprise dans ${second}s`;
+        subEl.textContent =
+          second === 1 ? 'C\'est parti !' : second === 2 ? 'Reprise dans 2…' : 'Reprise dans 3…';
       } else {
-        subEl.textContent = second === 1 ? 'Série bientôt finie' : `Encore ${second}s`;
+        subEl.textContent =
+          second === 1 ? 'Repos…' : second === 2 ? 'Encore 2 secondes' : 'Encore 3 secondes';
       }
     },
     onComplete: () => {
-      if (destroyed || finishing || busy) return;
-      if (mode === 'work') void advanceAfterWork();
-      else void advanceAfterRest();
+      if (destroyed || finishing) return;
+      queueMicrotask(() => {
+        if (destroyed || finishing) return;
+        busy = false;
+        if (mode === 'work') void advanceAfterWork();
+        else void advanceAfterRest();
+      });
     }
   });
 
   function currentExercise() {
     return day.exercises[exerciseIndex] || null;
+  }
+
+  function nextExercise() {
+    return day.exercises[exerciseIndex + 1] || null;
+  }
+
+  function previewExercise() {
+    const exercise = currentExercise();
+    if (mode === 'work' && exercise && setIndex === setsCount(exercise)) {
+      return nextExercise();
+    }
+    if (mode === 'rest' && restKind === 'between-exercises') {
+      return currentExercise();
+    }
+    return null;
+  }
+
+  function updateNextExercisePreview() {
+    const preview = $('#session-next-preview');
+    const previewImg = $('#session-next-preview-img');
+    const previewName = $('#session-next-preview-name');
+    const previewBadge = $('#session-next-preview-badge');
+    if (!preview) return;
+
+    const upcoming = previewExercise();
+
+    if (!upcoming) {
+      preview.classList.add('hidden');
+      preview.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    preview.classList.remove('hidden');
+    preview.setAttribute('aria-hidden', 'false');
+    if (previewName) previewName.textContent = upcoming.name;
+    if (previewBadge) {
+      previewBadge.textContent = '';
+      previewBadge.className = 'session-next-badge equipment-badge';
+      const type = String(upcoming.equipmentType || '').toUpperCase();
+      const isMachine = type === 'MACHINE';
+      previewBadge.classList.add(isMachine ? 'equipment-machine' : 'equipment-free');
+      previewBadge.textContent = isMachine ? 'MACHINE' : 'POIDS LIBRE';
+    }
+    if (previewImg) {
+      const path = String(upcoming.image || '').replace(/^\//, '');
+      previewImg.src = path ? `${path}?v=9` : '';
+      previewImg.alt = upcoming.name;
+    }
   }
 
   function workSeconds(ex) {
@@ -654,44 +713,6 @@ function createSessionController(day, startIndex = 0) {
     remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
   }
 
-  function sleep(ms, token) {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(token === countdownToken), ms);
-    });
-  }
-
-  async function runCountdown(label) {
-    const token = ++countdownToken;
-    timer.stop();
-    music.duck(true);
-    if (setDoneBtn) setDoneBtn.classList.add('hidden');
-    phaseEl.textContent = 'Prêt';
-    ring.classList.remove('rest');
-    ring.style.strokeDashoffset = String(CIRCUMFERENCE);
-
-    for (let n = 3; n >= 1; n -= 1) {
-      if (destroyed || finishing || token !== countdownToken) {
-        music.duck(false);
-        return false;
-      }
-      timeEl.textContent = String(n);
-      subEl.textContent = label;
-      playBeep({
-        frequency: n === 1 ? 1100 : 780,
-        duration: n === 1 ? 0.2 : 0.1,
-        volume: 0.28
-      });
-      const ok = await sleep(1000, token);
-      if (!ok || destroyed || finishing) {
-        music.duck(false);
-        return false;
-      }
-    }
-
-    music.duck(false);
-    return !(destroyed || finishing) && token === countdownToken;
-  }
-
   async function startWorkPhase() {
     if (destroyed || finishing) return;
     const exercise = currentExercise();
@@ -711,13 +732,6 @@ function createSessionController(day, startIndex = 0) {
       ? `Série ${setIndex}/${sets} — maintien`
       : `Série ${setIndex}/${sets} — ${exercise.reps} reps`;
 
-    await music.play('exercise', { loop: true, exerciseId: exercise.id });
-    const ok = await runCountdown(label);
-    if (!ok) {
-      busy = false;
-      return;
-    }
-
     phaseEl.textContent = 'Exercice';
     subEl.textContent = label;
     ring.classList.remove('rest');
@@ -725,11 +739,10 @@ function createSessionController(day, startIndex = 0) {
       setDoneBtn.classList.remove('hidden');
       setDoneBtn.textContent = 'Série terminée → Repos';
     }
-    // Reprend l'exercice après le countdown (le repos a pu être coupé)
-    await music.stop();
-    await music.play('exercise', { loop: true, exerciseId: exercise.id });
+
     timer.start(workSeconds(exercise));
     updateRemaining(workSeconds(exercise));
+    updateNextExercisePreview();
     busy = false;
   }
 
@@ -768,22 +781,13 @@ function createSessionController(day, startIndex = 0) {
 
     updateProgress();
 
-    // Coupe l'exercice avant le repos pour éviter le chevauchement
-    await music.stop();
-    await music.play('rest', { loop: true });
-    const ok = await runCountdown(label);
-    if (!ok) {
-      busy = false;
-      return;
-    }
-
     phaseEl.textContent = kind === 'between-exercises' ? 'Repos entre exercices' : 'Repos';
     subEl.textContent = label;
     ring.classList.add('rest');
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
-    await music.play('rest', { loop: true });
     timer.start(rest);
     updateRemaining(rest);
+    updateNextExercisePreview();
     busy = false;
   }
 
@@ -865,11 +869,9 @@ function createSessionController(day, startIndex = 0) {
     if (finishing || destroyed) return;
     finishing = true;
     busy = true;
-    countdownToken += 1;
     timer.stop();
     if (setDoneBtn) setDoneBtn.classList.add('hidden');
     await music.stop();
-    void music.play('finish', { loop: false });
 
     const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
     const calories = estimateCalories(durationSeconds / 60, program.meta.caloriesPerMinute);
@@ -913,7 +915,6 @@ function createSessionController(day, startIndex = 0) {
 
   async function exitToExercises(savePartial) {
     if (destroyed) return;
-    countdownToken += 1;
     timer.stop();
     await music.stop();
 
@@ -964,40 +965,12 @@ function createSessionController(day, startIndex = 0) {
       case 'btn-pause':
         if (busy) return;
         timer.toggle();
+        music.togglePause(timer.getState().paused);
         btn.textContent = timer.getState().paused ? 'Reprendre' : 'Pause';
         break;
       case 'btn-skip':
-        if (busy) {
-          countdownToken += 1;
-          music.duck(false);
-          const exercise = currentExercise();
-          if (mode === 'rest') {
-            if (!exercise && restKind !== 'between-exercises') break;
-            const secs = restKind === 'between-exercises'
-              ? afterExerciseRestSeconds()
-              : restSeconds(exercise);
-            phaseEl.textContent = restKind === 'between-exercises' ? 'Repos entre exercices' : 'Repos';
-            subEl.textContent = restKind === 'between-exercises'
-              ? `Repos ${formatRestLabel(secs)} — ${exercise?.name || 'suivant'}`
-              : `Repos ${formatRestLabel(secs)} — série ${setIndex}/${setsCount(exercise)}`;
-            ring.classList.add('rest');
-            if (setDoneBtn) setDoneBtn.classList.add('hidden');
-            void music.play('rest', { loop: true });
-            timer.start(secs);
-            busy = false;
-          } else {
-            if (!exercise) break;
-            phaseEl.textContent = 'Exercice';
-            subEl.textContent = `Série ${setIndex}/${setsCount(exercise)}`;
-            ring.classList.remove('rest');
-            if (setDoneBtn) setDoneBtn.classList.remove('hidden');
-            void music.play('exercise', { loop: true, exerciseId: exercise.id });
-            timer.start(workSeconds(exercise));
-            busy = false;
-          }
-        } else {
-          timer.skip();
-        }
+        if (busy) return;
+        timer.skip();
         break;
       case 'btn-back-exercises':
       case 'btn-close-session':
@@ -1007,7 +980,6 @@ function createSessionController(day, startIndex = 0) {
         void finishSession(false);
         break;
       case 'btn-restart':
-        countdownToken += 1;
         timer.stop();
         exerciseIndex = Math.max(0, Number(startIndex) || 0);
         setIndex = 1;
@@ -1017,6 +989,7 @@ function createSessionController(day, startIndex = 0) {
         finishing = false;
         busy = false;
         $('#btn-pause').textContent = 'Pause';
+        void music.restartSession();
         void startWorkPhase();
         break;
       default:
@@ -1043,13 +1016,13 @@ function createSessionController(day, startIndex = 0) {
       void (async () => {
         await music.unlock();
         await unlockBeeps();
+        await music.startSession();
         await startWorkPhase();
       })();
     },
     destroy() {
       destroyed = true;
       finishing = true;
-      countdownToken += 1;
       timer.stop();
       void music.stop();
       overlay.removeEventListener('click', onOverlayClick);
@@ -1105,6 +1078,12 @@ function ensureSessionOverlay() {
     </div>
     <div class="session-image-panel">
       <img id="session-exercise-img" alt="Illustration de l'exercice" width="1200" height="750" />
+      <div id="session-next-preview" class="session-next-preview hidden" aria-hidden="true">
+        <span class="session-next-label">Prochain exercice</span>
+        <img id="session-next-preview-img" alt="" width="160" height="100" />
+        <span id="session-next-preview-name" class="session-next-name"></span>
+        <span id="session-next-preview-badge" class="session-next-badge equipment-badge"></span>
+      </div>
     </div>
     <div class="session-main">
       <div class="timer-wrap">
@@ -1197,7 +1176,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=59');
+      const registration = await navigator.serviceWorker.register('sw.js?v=71');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
