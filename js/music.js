@@ -8,7 +8,7 @@ let playlistPromise = null;
 
 async function loadPlaylist() {
   if (!playlistPromise) {
-    playlistPromise = fetch('music/playlist.json?v=71')
+    playlistPromise = fetch('music/playlist.json?v=72')
       .then((res) => (res.ok ? res.json() : { session: [] }))
       .then((data) => {
         SESSION_TRACKS = Array.isArray(data?.session) ? data.session.filter(Boolean) : [];

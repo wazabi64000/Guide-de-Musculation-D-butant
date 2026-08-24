@@ -107,7 +107,7 @@ async function renderHome() {
   const goal = program.meta.goal === 'hypertrophie'
     ? `${level}Hypertrophie · repos adaptés (1–2 min 30)`
     : program.meta.subtitle;
-  const durationLabel = day.durationLabel || `${day.duration} min`;
+  const durationLabel = suggested.durationLabel || `${suggested.duration} min`;
   $('#program-sub').textContent = `${suggested.name} — ${suggested.focus} · ${durationLabel} · ${goal}`;
 
   const fill = $('#home-progress-fill');
@@ -1176,7 +1176,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=71');
+      const registration = await navigator.serviceWorker.register('sw.js?v=72');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
