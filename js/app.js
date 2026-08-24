@@ -20,7 +20,7 @@ import {
   resolveTodayWeight,
   buildLoadSummary
 } from './loads.js';
-import { loadProgram, getDayById, getSuggestedDay, isRestDay, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
+import { loadProgram, getDayById, getSuggestedDay, isRestDay, hasWarmup, warmupSeconds, warmupSteps, normalizeWarmupStep, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
 import { computeStats, renderHistoryList, renderRecords, drawWeeklyChart } from './stats.js';
 import { bindSettingsPage } from './settings.js';
 import { buildNav, getQueryParam, navigate, currentPage } from './router.js';
@@ -221,6 +221,8 @@ function openDayView(day) {
   );
 
   const exerciseList = el('div', { className: 'exercise-list', style: 'margin-top:1rem' });
+  const warmupCard = renderWarmupCard(day);
+  if (warmupCard) exerciseList.appendChild(warmupCard);
   day.exercises.forEach((exercise, index) => {
     exerciseList.appendChild(renderExerciseCard(day, exercise, index));
   });
@@ -229,6 +231,44 @@ function openDayView(day) {
   if (getQueryParam('start') === '1' && day.exercises.length) {
     startSession(day);
   }
+}
+
+function renderWarmupStepCard(step, index, { compact = false } = {}) {
+  const normalized = normalizeWarmupStep(step);
+  const card = el('article', {
+    className: `warmup-step-card fade-in${compact ? ' warmup-step-card--compact' : ''}`,
+    'data-warmup-step': String(index)
+  });
+
+  card.append(
+    createImageWithFallback(normalized.image, normalized.label),
+    el('div', { className: 'warmup-step-body' }, [
+      el('span', { className: 'warmup-step-index', text: `Étape ${index + 1}` }),
+      el('p', { className: 'warmup-step-label', text: normalized.label })
+    ])
+  );
+
+  return card;
+}
+
+function renderWarmupCard(day) {
+  if (!hasWarmup(day)) return null;
+  const w = day.warmup;
+  const steps = warmupSteps(day);
+
+  return el('article', { className: 'card warmup-card fade-in' }, [
+    el('span', { className: 'badge warmup-badge', text: 'Obligatoire · Avant le 1er exercice' }),
+    el('h3', { className: 'card-title', text: w.title || 'Échauffement Intégral' }),
+    el('p', {
+      className: 'card-text warmup-duration',
+      text: `Durée recommandée : ${w.duration || '10-15 min'}`
+    }),
+    el(
+      'div',
+      { className: 'warmup-steps-grid' },
+      steps.map((step, index) => renderWarmupStepCard(step, index))
+    )
+  ]);
 }
 
 function renderExerciseCard(day, exercise, index) {
@@ -563,7 +603,7 @@ function createSessionController(day, startIndex = 0) {
 
   let exerciseIndex = Math.max(0, Number(startIndex) || 0);
   let setIndex = 1;
-  /** @type {'work'|'rest'} */
+  /** @type {'warmup'|'work'|'rest'} */
   let mode = 'work';
   let startedAt = Date.now();
   let completedExercises = new Set();
@@ -582,10 +622,15 @@ function createSessionController(day, startIndex = 0) {
       ring.style.strokeDasharray = String(CIRCUMFERENCE);
       ring.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - state.progress));
       updateRemaining(state.remaining);
+      if (mode === 'warmup') updateWarmupStepUI(state.remaining);
     },
     onEndingBeep: (second) => {
-      playCountdownBeep(second, { mode: mode === 'rest' ? 'rest' : 'work' });
-      if (mode === 'rest') {
+      const beepMode = mode === 'rest' ? 'rest' : 'work';
+      playCountdownBeep(second, { mode: beepMode });
+      if (mode === 'warmup') {
+        subEl.textContent =
+          second === 1 ? 'Passage aux exercices…' : `Encore ${second}s d'échauffement`;
+      } else if (mode === 'rest') {
         subEl.textContent =
           second === 1 ? 'C\'est parti !' : second === 2 ? 'Reprise dans 2…' : 'Reprise dans 3…';
       } else {
@@ -598,11 +643,66 @@ function createSessionController(day, startIndex = 0) {
       queueMicrotask(() => {
         if (destroyed || finishing) return;
         busy = false;
-        if (mode === 'work') void advanceAfterWork();
+        if (mode === 'warmup') {
+          setWarmupPanelVisible(false);
+          void startWorkPhase();
+        } else if (mode === 'work') void advanceAfterWork();
         else void advanceAfterRest();
       });
     }
   });
+
+  function shouldRunWarmup() {
+    return exerciseIndex === 0 && Number(startIndex) === 0 && hasWarmup(day);
+  }
+
+  function setWarmupPanelVisible(show) {
+    const panel = $('#session-warmup-panel');
+    if (panel) panel.classList.toggle('hidden', !show);
+  }
+
+  function currentWarmupStepIndex(remaining) {
+    const steps = warmupSteps(day);
+    if (!steps.length) return 0;
+    const total = warmupSeconds(day);
+    const elapsed = Math.max(0, total - (Number(remaining) || 0));
+    const segment = total / steps.length;
+    return Math.min(steps.length - 1, Math.floor(elapsed / segment));
+  }
+
+  function highlightWarmupStep(index) {
+    const panel = $('#session-warmup-steps');
+    if (!panel) return;
+    panel.querySelectorAll('.warmup-step-card').forEach((card, i) => {
+      card.classList.toggle('is-active', i === index);
+    });
+  }
+
+  function updateWarmupStepUI(remaining) {
+    const steps = warmupSteps(day);
+    if (!steps.length) return;
+    const index = currentWarmupStepIndex(remaining);
+    const step = steps[index];
+    if (step?.image) {
+      setSessionBackground({ name: step.label, image: step.image });
+    }
+    nameEl.textContent = step.label;
+    subEl.textContent = `Étape ${index + 1}/${steps.length} · ${day.warmup.duration || '10-15 min'}`;
+    highlightWarmupStep(index);
+  }
+
+  function fillWarmupPanel() {
+    const durationEl = $('#session-warmup-duration');
+    const list = $('#session-warmup-steps');
+    if (!day.warmup || !list) return;
+    if (durationEl) {
+      durationEl.textContent = `Durée recommandée : ${day.warmup.duration || '10-15 min'}`;
+    }
+    clear(list);
+    warmupSteps(day).forEach((step, index) => {
+      list.appendChild(renderWarmupStepCard(step, index, { compact: true }));
+    });
+  }
 
   function currentExercise() {
     return day.exercises[exerciseIndex] || null;
@@ -683,6 +783,19 @@ function createSessionController(day, startIndex = 0) {
   function updateRemaining(current = 0) {
     let seconds = Number(current) || 0;
     const betweenExercises = afterExerciseRestSeconds();
+    if (mode === 'warmup') {
+      for (let i = 0; i < day.exercises.length; i += 1) {
+        const ex = day.exercises[i];
+        const sets = setsCount(ex);
+        for (let s = 1; s <= sets; s += 1) {
+          seconds += workSeconds(ex);
+          if (s < sets) seconds += restSeconds(ex);
+          else if (i < day.exercises.length - 1) seconds += betweenExercises;
+        }
+      }
+      remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
+      return;
+    }
     for (let i = exerciseIndex; i < day.exercises.length; i += 1) {
       const ex = day.exercises[i];
       const sets = setsCount(ex);
@@ -713,8 +826,39 @@ function createSessionController(day, startIndex = 0) {
     remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
   }
 
+  async function startWarmupPhase() {
+    if (destroyed || finishing || !hasWarmup(day)) {
+      await startWorkPhase();
+      return;
+    }
+
+    busy = true;
+    mode = 'warmup';
+    const secs = warmupSeconds(day);
+
+    phaseEl.textContent = 'Échauffement';
+    ring.classList.remove('rest');
+    ring.classList.add('warmup');
+
+    fillWarmupPanel();
+    setWarmupPanelVisible(true);
+    updateWarmupStepUI(secs);
+    updateNextExercisePreview();
+
+    if (setDoneBtn) {
+      setDoneBtn.classList.remove('hidden');
+      setDoneBtn.textContent = 'Échauffement terminé → Exercices';
+    }
+
+    timer.start(secs);
+    updateRemaining(secs);
+    busy = false;
+  }
+
   async function startWorkPhase() {
     if (destroyed || finishing) return;
+    setWarmupPanelVisible(false);
+    ring.classList.remove('warmup');
     const exercise = currentExercise();
     if (!exercise) {
       await finishSession(true);
@@ -959,7 +1103,14 @@ function createSessionController(day, startIndex = 0) {
 
     switch (btn.id) {
       case 'btn-set-done':
-        if (busy || mode !== 'work') return;
+        if (busy) return;
+        if (mode === 'warmup') {
+          timer.stop();
+          setWarmupPanelVisible(false);
+          void startWorkPhase();
+          break;
+        }
+        if (mode !== 'work') return;
         void advanceAfterWork();
         break;
       case 'btn-pause':
@@ -970,6 +1121,12 @@ function createSessionController(day, startIndex = 0) {
         break;
       case 'btn-skip':
         if (busy) return;
+        if (mode === 'warmup') {
+          timer.stop();
+          setWarmupPanelVisible(false);
+          void startWorkPhase();
+          break;
+        }
         timer.skip();
         break;
       case 'btn-back-exercises':
@@ -990,7 +1147,8 @@ function createSessionController(day, startIndex = 0) {
         busy = false;
         $('#btn-pause').textContent = 'Pause';
         void music.restartSession();
-        void startWorkPhase();
+        if (shouldRunWarmup()) void startWarmupPhase();
+        else void startWorkPhase();
         break;
       default:
         break;
@@ -1017,7 +1175,8 @@ function createSessionController(day, startIndex = 0) {
         await music.unlock();
         await unlockBeeps();
         await music.startSession();
-        await startWorkPhase();
+        if (shouldRunWarmup()) await startWarmupPhase();
+        else await startWorkPhase();
       })();
     },
     destroy() {
@@ -1101,6 +1260,11 @@ function ensureSessionOverlay() {
       <div class="session-progress-block">
         <div class="progress-bar"><div class="progress-fill" id="session-progress-fill"></div></div>
         <p class="card-text session-remaining" id="session-remaining">Restant ~ 0 min</p>
+        <div id="session-warmup-panel" class="session-warmup-panel hidden" aria-label="Échauffement">
+          <div class="warmup-panel-title">Échauffement Intégral</div>
+          <p class="warmup-panel-duration" id="session-warmup-duration">10-15 min</p>
+          <div id="session-warmup-steps" class="warmup-steps-grid session-warmup-steps"></div>
+        </div>
         <button class="btn btn-primary hidden" type="button" id="btn-set-done">Série terminée → Repos</button>
       </div>
     </div>
@@ -1176,7 +1340,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=72');
+      const registration = await navigator.serviceWorker.register('sw.js?v=75');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

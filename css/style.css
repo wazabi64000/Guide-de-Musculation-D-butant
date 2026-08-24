@@ -1298,3 +1298,110 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
   justify-content: flex-start;
 }
+
+/* ——— Échauffement ——— */
+.warmup-card {
+  border-color: rgba(77, 163, 255, 0.35);
+  background: linear-gradient(145deg, rgba(77, 163, 255, 0.08), rgba(18, 18, 20, 0.95));
+  margin-bottom: 0.75rem;
+}
+
+.warmup-badge {
+  background: rgba(77, 163, 255, 0.18);
+  color: #7ec8ff;
+  border: 1px solid rgba(77, 163, 255, 0.35);
+}
+
+.warmup-duration {
+  margin-bottom: 0.85rem;
+  font-weight: 600;
+}
+
+.warmup-steps-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.warmup-step-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(77, 163, 255, 0.22);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.warmup-step-card.is-active {
+  border-color: rgba(77, 163, 255, 0.65);
+  box-shadow: 0 0 0 1px rgba(77, 163, 255, 0.25), 0 0 20px rgba(77, 163, 255, 0.12);
+}
+
+.warmup-step-body {
+  padding: 0.7rem 0.85rem 0.85rem;
+}
+
+.warmup-step-index {
+  display: inline-block;
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7ec8ff;
+}
+
+.warmup-step-label {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.session-warmup-steps {
+  margin-top: 0.35rem;
+}
+
+.warmup-step-card--compact .exercise-media {
+  aspect-ratio: 16 / 9;
+  max-height: 108px;
+}
+
+.warmup-step-card--compact .warmup-step-body {
+  padding: 0.55rem 0.7rem 0.65rem;
+}
+
+.warmup-step-card--compact .warmup-step-label {
+  font-size: 0.82rem;
+}
+
+.session-warmup-panel {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(77, 163, 255, 0.3);
+  background: rgba(77, 163, 255, 0.08);
+  text-align: left;
+}
+
+.warmup-panel-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7ec8ff;
+  margin-bottom: 0.25rem;
+}
+
+.warmup-panel-duration {
+  margin: 0 0 0.55rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.timer-progress.warmup {
+  stroke: #4da3ff;
+  filter: drop-shadow(0 0 8px rgba(77, 163, 255, 0.45));
+}

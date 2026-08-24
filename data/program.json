@@ -7,11 +7,11 @@
     "defaultReps": "8-12",
     "defaultRestSeconds": 60,
     "defaultExerciseSeconds": 45,
-    "warmupMinutes": 5,
+    "warmupMinutes": 12,
     "stretchMinutes": 5,
     "caloriesPerMinute": 6.5,
     "instructions": [
-      "Échauffement : 5 minutes avant chaque séance.",
+      "Échauffement intégral obligatoire : 10 à 15 min avant le 1er exercice.",
       "Chaque séance d'entraînement : 6 exercices · 60 à 90 minutes.",
       "Surcharge progressive : +1 rep ou un peu de poids quand c'est facile.",
       "Gros exercices : repos 90 s · isolation 60 s · abdos 45 s.",
@@ -49,9 +49,28 @@
       "name": "Jour 1",
       "focus": "Full Body A",
       "duration": 75,
-      "durationLabel": "60-90 min",
+      "durationLabel": "75-105 min (échauffement inclus)",
       "isRestDay": false,
       "color": "#4DA3FF",
+      "warmup": {
+        "title": "Échauffement Intégral",
+        "duration": "10-15 min",
+        "seconds": 720,
+        "steps": [
+          {
+            "label": "Cardio léger rameur (Rameur / Tapis) : 3-5 min",
+            "image": "images/rameur.gif"
+          },
+          {
+            "label": "Mobilité articulaire (Épaules, poignets, bassin) : 3-5 min",
+            "image": "images/mobilite-articulaire.jpg"
+          },
+          {
+            "label": "Séries de montée en charge sur le développé couché : 2 séries légères",
+            "image": "images/db-bench-press.gif"
+          }
+        ]
+      },
       "exercises": [
         {
           "id": "fb-a-bench",
@@ -174,9 +193,28 @@
       "name": "Jour 2",
       "focus": "Ciblée Haut (Pecs / Épaules)",
       "duration": 75,
-      "durationLabel": "60-90 min",
+      "durationLabel": "75-105 min (échauffement inclus)",
       "isRestDay": false,
       "color": "#FF5C7A",
+      "warmup": {
+        "title": "Échauffement Intégral",
+        "duration": "10-15 min",
+        "seconds": 720,
+        "steps": [
+          {
+            "label": "Cardio léger rameur (Rameur / Tapis) : 3-5 min",
+            "image": "images/rameur.gif"
+          },
+          {
+            "label": "Mobilité articulaire (Épaules, poignets, bassin) : 3-5 min",
+            "image": "images/mobilite-articulaire.jpg"
+          },
+          {
+            "label": "Séries de montée en charge sur le développé incliné : 2 séries légères",
+            "image": "images/incline-press.gif"
+          }
+        ]
+      },
       "exercises": [
         {
           "id": "up-b-incline",
@@ -309,9 +347,28 @@
       "name": "Jour 4",
       "focus": "Full Body B",
       "duration": 75,
-      "durationLabel": "60-90 min",
+      "durationLabel": "75-105 min (échauffement inclus)",
       "isRestDay": false,
       "color": "#3DDC97",
+      "warmup": {
+        "title": "Échauffement Intégral",
+        "duration": "10-15 min",
+        "seconds": 720,
+        "steps": [
+          {
+            "label": "Cardio léger rameur (Rameur / Tapis) : 3-5 min",
+            "image": "images/rameur.gif"
+          },
+          {
+            "label": "Mobilité articulaire (Épaules, poignets, bassin) : 3-5 min",
+            "image": "images/mobilite-articulaire.jpg"
+          },
+          {
+            "label": "Séries de montée en charge sur le soulevé de terre romain : 2 séries légères",
+            "image": "images/db-rdl.gif"
+          }
+        ]
+      },
       "exercises": [
         {
           "id": "fb-b-rdl",
@@ -435,9 +492,28 @@
       "name": "Jour 5",
       "focus": "Ciblée Bas & Obliques / Cardio",
       "duration": 75,
-      "durationLabel": "60-90 min",
+      "durationLabel": "75-105 min (échauffement inclus)",
       "isRestDay": false,
       "color": "#FF8A4C",
+      "warmup": {
+        "title": "Échauffement Intégral",
+        "duration": "10-15 min",
+        "seconds": 720,
+        "steps": [
+          {
+            "label": "Cardio léger rameur (Rameur / Tapis) : 3-5 min",
+            "image": "images/rameur.gif"
+          },
+          {
+            "label": "Mobilité articulaire (Épaules, poignets, bassin) : 3-5 min",
+            "image": "images/mobilite-articulaire.jpg"
+          },
+          {
+            "label": "Séries de montée en charge sur la leg extension : 2 séries légères",
+            "image": "images/hack-squat.gif"
+          }
+        ]
+      },
       "exercises": [
         {
           "id": "low-c-leg-ext",

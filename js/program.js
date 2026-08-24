@@ -2,7 +2,7 @@ let programCache = null;
 
 export async function loadProgram() {
   if (programCache) return programCache;
-  const response = await fetch(`data/program.json?v=72`);
+  const response = await fetch(`data/program.json?v=75`);
   if (!response.ok) throw new Error('Impossible de charger program.json');
   programCache = await response.json();
   return programCache;
@@ -29,6 +29,32 @@ export function getSuggestedDay(program) {
 
 export function isRestDay(day) {
   return Boolean(day?.isRestDay) || !day?.exercises?.length;
+}
+
+export function hasWarmup(day) {
+  return warmupSteps(day).length > 0;
+}
+
+export function normalizeWarmupStep(step) {
+  if (typeof step === 'string') {
+    return { label: step, image: '' };
+  }
+  return {
+    label: step?.label || step?.text || '',
+    image: step?.image || ''
+  };
+}
+
+export function warmupSteps(day) {
+  return (day?.warmup?.steps || [])
+    .map(normalizeWarmupStep)
+    .filter((step) => step.label);
+}
+
+export function warmupSeconds(day, fallback = 720) {
+  const direct = Number(day?.warmup?.seconds);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  return Number(fallback) || 720;
 }
 
 /** Nombre de séries utilisable par le timer (ignore les labels type "100 / jour"). */
