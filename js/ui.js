@@ -73,6 +73,21 @@ export function muscleChips(muscles = []) {
   );
 }
 
+/** Variantes d'équipement interchangeables (haltères / poulie / machine) */
+export function variantChips(variants = []) {
+  if (!variants.length) return null;
+  return el(
+    'div',
+    { className: 'variant-list' },
+    variants.map((variant) =>
+      el('span', { className: 'variant-chip', title: variant.name }, [
+        el('span', { className: 'variant-equipment', text: variant.equipment }),
+        el('span', { className: 'variant-name', text: variant.name })
+      ])
+    )
+  );
+}
+
 /** Badge matériel : POIDS LIBRE ou MACHINE */
 export function equipmentBadge(equipmentType) {
   const type = String(equipmentType || '').toUpperCase();
@@ -81,6 +96,33 @@ export function equipmentBadge(equipmentType) {
     className: `equipment-badge ${isMachine ? 'equipment-machine' : 'equipment-free'}`,
     text: isMachine ? 'MACHINE' : 'POIDS LIBRE'
   });
+}
+
+/** Contrôles musique précédente / suivante (visibles sur toutes les pages). */
+export function buildMusicControls(variant = '') {
+  const className = variant ? `music-controls music-controls--${variant}` : 'music-controls';
+  return el(
+    'div',
+    { className, role: 'group', 'aria-label': 'Contrôles musique' },
+    [
+      el('button', {
+        className: 'music-btn',
+        type: 'button',
+        dataset: { musicAction: 'prev' },
+        'aria-label': 'Musique précédente',
+        title: 'Musique précédente',
+        text: '⏮'
+      }),
+      el('button', {
+        className: 'music-btn',
+        type: 'button',
+        dataset: { musicAction: 'next' },
+        'aria-label': 'Musique suivante',
+        title: 'Musique suivante',
+        text: '⏭'
+      })
+    ]
+  );
 }
 
 export function createImageWithFallback(src, alt) {
@@ -101,7 +143,7 @@ export function createImageWithFallback(src, alt) {
   img.width = 1200;
   img.height = 750;
   img.sizes = '(max-width: 639px) 100vw, (max-width: 1099px) 50vw, 520px';
-  img.src = `${path}?v=19`;
+  img.src = `${path}?v=20`;
   img.addEventListener('error', () => {
     img.remove();
     if (!wrap.querySelector('.fallback')) {

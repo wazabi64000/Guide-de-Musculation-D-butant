@@ -39,6 +39,7 @@ class MusicPlayer {
     this.currentSrc = null;
     this.unlocked = false;
     this.duckLevel = 1;
+    this.duckTimer = null;
     this.playToken = 0;
     this.sessionCursor = 0;
     this.sessionActive = false;
@@ -52,7 +53,7 @@ class MusicPlayer {
 
   targetVolume() {
     const v = Number(getCachedSetting('musicVolume'));
-    const base = Number.isFinite(v) ? v : 0.55;
+    const base = Number.isFinite(v) ? v : 0.48;
     return Math.min(1, Math.max(0, base * this.duckLevel));
   }
 
@@ -160,8 +161,18 @@ class MusicPlayer {
   }
 
   duck(on) {
-    this.duckLevel = on ? 0.18 : 1;
+    this.duckLevel = on ? 0.1 : 1;
     if (!this.audio.paused) this.applyVolume();
+  }
+
+  /** Baisse la musique pendant les bips de fin de phase. */
+  duckForBeep(ms = 750) {
+    if (this.duckTimer) clearTimeout(this.duckTimer);
+    this.duck(true);
+    this.duckTimer = setTimeout(() => {
+      this.duck(false);
+      this.duckTimer = null;
+    }, ms);
   }
 
   /** Démarre la playlist séance (ne coupe pas si déjà en cours). */
@@ -198,10 +209,70 @@ class MusicPlayer {
     return this.startSession();
   }
 
+  /** Index de la piste en cours de lecture (ou -1). */
+  currentIndex() {
+    if (!SESSION_TRACKS.length) return -1;
+    const n = SESSION_TRACKS.length;
+    return ((this.sessionCursor - 1) % n + n) % n;
+  }
+
+  /**
+   * Joue la piste `index` (avec bouclage) et relance la chaîne.
+   * Contrairement à startSession, demande juste la lecture : pratique pour
+   * les contrôles « précédent / suivant » disponibles hors séance.
+   */
+  async playAt(index) {
+    if (!this.isEnabled()) return false;
+    await loadPlaylist();
+    if (!SESSION_TRACKS.length) return false;
+
+    const n = SESSION_TRACKS.length;
+    const target = ((index % n) + n) % n;
+    const token = this.playToken + 1;
+
+    this.stopPlayback();
+    this.playToken = token;
+    this.sessionActive = true;
+    this.sessionCursor = (target + 1) % n;
+
+    const ok = await this.playSrc(SESSION_TRACKS[target], token);
+    if (!ok) this.sessionActive = false;
+    return ok;
+  }
+
+  /** Piste suivante (démarre la playlist si rien ne joue). */
+  async next() {
+    return this.skip(1);
+  }
+
+  /**
+   * Piste précédente. Si la piste actuelle tourne depuis plus de 3 s,
+   * elle repart du début (comportement standard des lecteurs).
+   */
+  async previous() {
+    if (this.sessionActive && !this.audio.paused && this.audio.currentTime > 3) {
+      return this.skip(0);
+    }
+    return this.skip(-1);
+  }
+
+  async skip(delta) {
+    if (!this.isEnabled()) return false;
+    await loadPlaylist();
+    if (!SESSION_TRACKS.length) return false;
+
+    const current = this.sessionActive ? this.currentIndex() : (delta > 0 ? -1 : 0);
+    return this.playAt(current + delta);
+  }
+
   /** Fin de séance — coupe tout. */
   async stop() {
     this.playToken += 1;
     this.sessionActive = false;
+    if (this.duckTimer) {
+      clearTimeout(this.duckTimer);
+      this.duckTimer = null;
+    }
     this.duck(false);
     this.stopPlayback();
   }

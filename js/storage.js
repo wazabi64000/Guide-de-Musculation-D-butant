@@ -7,7 +7,7 @@ import {
 export const DEFAULT_SETTINGS = {
   theme: 'dark',
   musicEnabled: true,
-  musicVolume: 0.55,
+  musicVolume: 0.48,
   musicMuted: false,
   musicAutoplay: true,
   defaultRestSeconds: 75,

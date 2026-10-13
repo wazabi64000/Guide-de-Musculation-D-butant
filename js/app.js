@@ -20,7 +20,7 @@ import {
   resolveTodayWeight,
   buildLoadSummary
 } from './loads.js';
-import { loadProgram, getDayById, getSuggestedDay, isRestDay, hasWarmup, warmupSeconds, warmupSteps, normalizeWarmupStep, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
+import { loadProgram, getDayById, getSuggestedDay, isRestDay, estimateDayDuration, collectMuscles, weekProgressKey, setsCount, restSecondsOf } from './program.js';
 import { computeStats, renderHistoryList, renderRecords, drawWeeklyChart } from './stats.js';
 import { bindSettingsPage } from './settings.js';
 import { buildNav, getQueryParam, navigate, currentPage } from './router.js';
@@ -36,6 +36,8 @@ import {
   quoteOfDay,
   muscleChips,
   equipmentBadge,
+  buildMusicControls,
+  variantChips,
   createImageWithFallback,
   enterFullscreen,
   exitFullscreen,
@@ -57,6 +59,7 @@ export async function boot() {
   initWakeLock();
 
   document.body.appendChild(buildNav());
+  mountMusicControls();
   registerServiceWorker();
 
   const page = currentPage();
@@ -76,6 +79,36 @@ export async function boot() {
   window.addEventListener('settings:changed', () => {
     music.setMuted(getCachedSetting('musicMuted'));
     music.setVolume(getCachedSetting('musicVolume'));
+    syncMusicControls();
+  });
+}
+
+/** Monte les contrôles musique dans la barre du haut (toutes les pages). */
+function mountMusicControls() {
+  const host = document.querySelector('.topbar');
+  if (host && !host.querySelector('.music-controls')) {
+    host.appendChild(buildMusicControls());
+  }
+
+  document.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-music-action]');
+    if (!btn || btn.disabled) return;
+    event.preventDefault();
+    if (btn.dataset.musicAction === 'next') void music.next();
+    else if (btn.dataset.musicAction === 'prev') void music.previous();
+  });
+
+  syncMusicControls();
+}
+
+/** Grise les contrôles musique quand la musique est coupée (réglages). */
+function syncMusicControls() {
+  const enabled = music.isEnabled();
+  document.querySelectorAll('.music-controls').forEach((box) => {
+    box.classList.toggle('is-off', !enabled);
+    box.querySelectorAll('button').forEach((btn) => {
+      btn.disabled = !enabled;
+    });
   });
 }
 
@@ -221,8 +254,6 @@ function openDayView(day) {
   );
 
   const exerciseList = el('div', { className: 'exercise-list', style: 'margin-top:1rem' });
-  const warmupCard = renderWarmupCard(day);
-  if (warmupCard) exerciseList.appendChild(warmupCard);
   day.exercises.forEach((exercise, index) => {
     exerciseList.appendChild(renderExerciseCard(day, exercise, index));
   });
@@ -231,44 +262,6 @@ function openDayView(day) {
   if (getQueryParam('start') === '1' && day.exercises.length) {
     startSession(day);
   }
-}
-
-function renderWarmupStepCard(step, index, { compact = false } = {}) {
-  const normalized = normalizeWarmupStep(step);
-  const card = el('article', {
-    className: `warmup-step-card fade-in${compact ? ' warmup-step-card--compact' : ''}`,
-    'data-warmup-step': String(index)
-  });
-
-  card.append(
-    createImageWithFallback(normalized.image, normalized.label),
-    el('div', { className: 'warmup-step-body' }, [
-      el('span', { className: 'warmup-step-index', text: `Étape ${index + 1}` }),
-      el('p', { className: 'warmup-step-label', text: normalized.label })
-    ])
-  );
-
-  return card;
-}
-
-function renderWarmupCard(day) {
-  if (!hasWarmup(day)) return null;
-  const w = day.warmup;
-  const steps = warmupSteps(day);
-
-  return el('article', { className: 'card warmup-card fade-in' }, [
-    el('span', { className: 'badge warmup-badge', text: 'Obligatoire · Avant le 1er exercice' }),
-    el('h3', { className: 'card-title', text: w.title || 'Échauffement Intégral' }),
-    el('p', {
-      className: 'card-text warmup-duration',
-      text: `Durée recommandée : ${w.duration || '10-15 min'}`
-    }),
-    el(
-      'div',
-      { className: 'warmup-steps-grid' },
-      steps.map((step, index) => renderWarmupStepCard(step, index))
-    )
-  ]);
 }
 
 function renderExerciseCard(day, exercise, index) {
@@ -336,6 +329,12 @@ function renderExerciseCard(day, exercise, index) {
       ? el('p', { className: 'exercise-target', text: `Cible : ${exercise.target}` })
       : null,
     muscleChips(exercise.muscles),
+    exercise.variants && exercise.variants.length
+      ? el('div', { className: 'detail-block variant-block' }, [
+          el('h4', { text: 'Autre équipement' }),
+          variantChips(exercise.variants)
+        ])
+      : null,
     el('div', { className: 'meta-row' }, [
       el('span', {
         text: exercise.setsLabel
@@ -539,7 +538,7 @@ function askLoadFeedback(exercise, { setsComplete = true } = {}) {
     ]);
 
     modal.appendChild(panel);
-    document.body.appendChild(modal);
+    modalHost().appendChild(modal);
 
     // Auto-passer après 12s pour ne jamais bloquer la séance
     window.setTimeout(() => finish(null), 12000);
@@ -603,7 +602,7 @@ function createSessionController(day, startIndex = 0) {
 
   let exerciseIndex = Math.max(0, Number(startIndex) || 0);
   let setIndex = 1;
-  /** @type {'warmup'|'work'|'rest'} */
+  /** @type {'work'|'rest'} */
   let mode = 'work';
   let startedAt = Date.now();
   let completedExercises = new Set();
@@ -622,15 +621,12 @@ function createSessionController(day, startIndex = 0) {
       ring.style.strokeDasharray = String(CIRCUMFERENCE);
       ring.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - state.progress));
       updateRemaining(state.remaining);
-      if (mode === 'warmup') updateWarmupStepUI(state.remaining);
     },
     onEndingBeep: (second) => {
       const beepMode = mode === 'rest' ? 'rest' : 'work';
+      music.duckForBeep(second === 1 ? 850 : 650);
       playCountdownBeep(second, { mode: beepMode });
-      if (mode === 'warmup') {
-        subEl.textContent =
-          second === 1 ? 'Passage aux exercices…' : `Encore ${second}s d'échauffement`;
-      } else if (mode === 'rest') {
+      if (mode === 'rest') {
         subEl.textContent =
           second === 1 ? 'C\'est parti !' : second === 2 ? 'Reprise dans 2…' : 'Reprise dans 3…';
       } else {
@@ -643,66 +639,11 @@ function createSessionController(day, startIndex = 0) {
       queueMicrotask(() => {
         if (destroyed || finishing) return;
         busy = false;
-        if (mode === 'warmup') {
-          setWarmupPanelVisible(false);
-          void startWorkPhase();
-        } else if (mode === 'work') void advanceAfterWork();
+        if (mode === 'work') void advanceAfterWork();
         else void advanceAfterRest();
       });
     }
   });
-
-  function shouldRunWarmup() {
-    return exerciseIndex === 0 && Number(startIndex) === 0 && hasWarmup(day);
-  }
-
-  function setWarmupPanelVisible(show) {
-    const panel = $('#session-warmup-panel');
-    if (panel) panel.classList.toggle('hidden', !show);
-  }
-
-  function currentWarmupStepIndex(remaining) {
-    const steps = warmupSteps(day);
-    if (!steps.length) return 0;
-    const total = warmupSeconds(day);
-    const elapsed = Math.max(0, total - (Number(remaining) || 0));
-    const segment = total / steps.length;
-    return Math.min(steps.length - 1, Math.floor(elapsed / segment));
-  }
-
-  function highlightWarmupStep(index) {
-    const panel = $('#session-warmup-steps');
-    if (!panel) return;
-    panel.querySelectorAll('.warmup-step-card').forEach((card, i) => {
-      card.classList.toggle('is-active', i === index);
-    });
-  }
-
-  function updateWarmupStepUI(remaining) {
-    const steps = warmupSteps(day);
-    if (!steps.length) return;
-    const index = currentWarmupStepIndex(remaining);
-    const step = steps[index];
-    if (step?.image) {
-      setSessionBackground({ name: step.label, image: step.image });
-    }
-    nameEl.textContent = step.label;
-    subEl.textContent = `Étape ${index + 1}/${steps.length} · ${day.warmup.duration || '10-15 min'}`;
-    highlightWarmupStep(index);
-  }
-
-  function fillWarmupPanel() {
-    const durationEl = $('#session-warmup-duration');
-    const list = $('#session-warmup-steps');
-    if (!day.warmup || !list) return;
-    if (durationEl) {
-      durationEl.textContent = `Durée recommandée : ${day.warmup.duration || '10-15 min'}`;
-    }
-    clear(list);
-    warmupSteps(day).forEach((step, index) => {
-      list.appendChild(renderWarmupStepCard(step, index, { compact: true }));
-    });
-  }
 
   function currentExercise() {
     return day.exercises[exerciseIndex] || null;
@@ -783,19 +724,6 @@ function createSessionController(day, startIndex = 0) {
   function updateRemaining(current = 0) {
     let seconds = Number(current) || 0;
     const betweenExercises = afterExerciseRestSeconds();
-    if (mode === 'warmup') {
-      for (let i = 0; i < day.exercises.length; i += 1) {
-        const ex = day.exercises[i];
-        const sets = setsCount(ex);
-        for (let s = 1; s <= sets; s += 1) {
-          seconds += workSeconds(ex);
-          if (s < sets) seconds += restSeconds(ex);
-          else if (i < day.exercises.length - 1) seconds += betweenExercises;
-        }
-      }
-      remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
-      return;
-    }
     for (let i = exerciseIndex; i < day.exercises.length; i += 1) {
       const ex = day.exercises[i];
       const sets = setsCount(ex);
@@ -826,39 +754,8 @@ function createSessionController(day, startIndex = 0) {
     remainEl.textContent = `Restant ~ ${formatDuration(seconds)}`;
   }
 
-  async function startWarmupPhase() {
-    if (destroyed || finishing || !hasWarmup(day)) {
-      await startWorkPhase();
-      return;
-    }
-
-    busy = true;
-    mode = 'warmup';
-    const secs = warmupSeconds(day);
-
-    phaseEl.textContent = 'Échauffement';
-    ring.classList.remove('rest');
-    ring.classList.add('warmup');
-
-    fillWarmupPanel();
-    setWarmupPanelVisible(true);
-    updateWarmupStepUI(secs);
-    updateNextExercisePreview();
-
-    if (setDoneBtn) {
-      setDoneBtn.classList.remove('hidden');
-      setDoneBtn.textContent = 'Échauffement terminé → Exercices';
-    }
-
-    timer.start(secs);
-    updateRemaining(secs);
-    busy = false;
-  }
-
   async function startWorkPhase() {
     if (destroyed || finishing) return;
-    setWarmupPanelVisible(false);
-    ring.classList.remove('warmup');
     const exercise = currentExercise();
     if (!exercise) {
       await finishSession(true);
@@ -1097,20 +994,13 @@ function createSessionController(day, startIndex = 0) {
     openDayView(day);
   }
 
-  const onOverlayClick = (event) => {
+  const onOverlayClick = async (event) => {
     const btn = event.target.closest('button');
     if (!btn || destroyed || finishing) return;
 
     switch (btn.id) {
       case 'btn-set-done':
-        if (busy) return;
-        if (mode === 'warmup') {
-          timer.stop();
-          setWarmupPanelVisible(false);
-          void startWorkPhase();
-          break;
-        }
-        if (mode !== 'work') return;
+        if (busy || mode !== 'work') return;
         void advanceAfterWork();
         break;
       case 'btn-pause':
@@ -1119,36 +1009,50 @@ function createSessionController(day, startIndex = 0) {
         music.togglePause(timer.getState().paused);
         btn.textContent = timer.getState().paused ? 'Reprendre' : 'Pause';
         break;
-      case 'btn-skip':
+      case 'btn-skip': {
         if (busy) return;
-        if (mode === 'warmup') {
-          timer.stop();
-          setWarmupPanelVisible(false);
-          void startWorkPhase();
-          break;
-        }
+        const ok = await confirmAction({
+          title: 'Passer ?',
+          message: 'Cette étape sera passée sans attendre la fin du chrono.',
+          confirmLabel: 'Passer'
+        });
+        if (!ok || busy || destroyed || finishing) return;
         timer.skip();
         break;
+      }
       case 'btn-back-exercises':
       case 'btn-close-session':
         void exitToExercises(true);
         break;
-      case 'btn-stop':
-        void finishSession(false);
+      case 'btn-stop': {
+        const ok = await confirmAction({
+          title: 'Terminer la séance ?',
+          message: 'La séance en cours sera enregistrée comme non terminée.',
+          confirmLabel: 'Terminer',
+          confirmClass: 'btn-danger'
+        });
+        if (ok && !destroyed && !finishing) void finishSession(false);
         break;
+      }
       case 'btn-restart':
+        if (busy) return;
+        if (
+          !(await confirmAction({
+            title: 'Recommencer ?',
+            message: "Recommencer l'exercice en cours, à partir de la 1ʳᵉ série.",
+            confirmLabel: 'Recommencer'
+          }))
+        ) {
+          return;
+        }
+        if (busy || destroyed || finishing) return;
+        // Relance uniquement l'exercice affiché : on ne revient pas au début
+        // de la séance, on garde les exercices déjà validés et la musique en cours.
         timer.stop();
-        exerciseIndex = Math.max(0, Number(startIndex) || 0);
         setIndex = 1;
         mode = 'work';
-        completedExercises = new Set();
-        startedAt = Date.now();
-        finishing = false;
-        busy = false;
         $('#btn-pause').textContent = 'Pause';
-        void music.restartSession();
-        if (shouldRunWarmup()) void startWarmupPhase();
-        else void startWorkPhase();
+        void startWorkPhase();
         break;
       default:
         break;
@@ -1175,8 +1079,7 @@ function createSessionController(day, startIndex = 0) {
         await music.unlock();
         await unlockBeeps();
         await music.startSession();
-        if (shouldRunWarmup()) await startWarmupPhase();
-        else await startWorkPhase();
+        await startWorkPhase();
       })();
     },
     destroy() {
@@ -1192,6 +1095,7 @@ function createSessionController(day, startIndex = 0) {
 }
 
 function setSessionBackground(exercise) {
+  setSessionVariants(exercise);
   const panelImg = $('#session-exercise-img');
   const path = String(exercise?.image || '').replace(/^\//, '');
   const url = path ? `${path}?v=9` : '';
@@ -1212,6 +1116,33 @@ function setSessionBackground(exercise) {
   panelImg.onload = () => {
     panelImg.style.opacity = '1';
   };
+}
+
+function setSessionVariants(exercise) {
+  const box = $('#session-variants');
+  const list = $('#session-variants-list');
+  if (!box || !list) return;
+
+  const variants = exercise?.variants || [];
+  list.replaceChildren();
+
+  if (!variants.length) {
+    box.classList.add('hidden');
+    box.open = false;
+    return;
+  }
+
+  variants.forEach((variant) => {
+    list.appendChild(
+      el('span', { className: 'variant-chip', title: variant.name }, [
+        el('span', { className: 'variant-equipment', text: variant.equipment }),
+        el('span', { className: 'variant-name', text: variant.name })
+      ])
+    );
+  });
+
+  box.classList.remove('hidden');
+  box.open = false;
 }
 
 function ensureSessionOverlay() {
@@ -1243,6 +1174,10 @@ function ensureSessionOverlay() {
         <span id="session-next-preview-name" class="session-next-name"></span>
         <span id="session-next-preview-badge" class="session-next-badge equipment-badge"></span>
       </div>
+      <details id="session-variants" class="session-variants hidden">
+        <summary>Autre équipement</summary>
+        <div class="variant-list" id="session-variants-list"></div>
+      </details>
     </div>
     <div class="session-main">
       <div class="timer-wrap">
@@ -1260,24 +1195,81 @@ function ensureSessionOverlay() {
       <div class="session-progress-block">
         <div class="progress-bar"><div class="progress-fill" id="session-progress-fill"></div></div>
         <p class="card-text session-remaining" id="session-remaining">Restant ~ 0 min</p>
-        <div id="session-warmup-panel" class="session-warmup-panel hidden" aria-label="Échauffement">
-          <div class="warmup-panel-title">Échauffement Intégral</div>
-          <p class="warmup-panel-duration" id="session-warmup-duration">10-15 min</p>
-          <div id="session-warmup-steps" class="warmup-steps-grid session-warmup-steps"></div>
-        </div>
         <button class="btn btn-primary hidden" type="button" id="btn-set-done">Série terminée → Repos</button>
       </div>
     </div>
     <div class="session-footer">
+      <div class="music-controls music-controls--session" role="group" aria-label="Contrôles musique">
+        <button class="music-btn" type="button" data-music-action="prev" aria-label="Musique précédente" title="Musique précédente">⏮</button>
+        <button class="music-btn" type="button" data-music-action="next" aria-label="Musique suivante" title="Musique suivante">⏭</button>
+      </div>
       <div class="session-actions">
         <button class="btn btn-secondary" type="button" id="btn-pause">Pause</button>
         <button class="btn btn-secondary" type="button" id="btn-skip">Passer</button>
-        <button class="btn btn-secondary" type="button" id="btn-restart">Recommencer</button>
+        <button class="btn btn-secondary" type="button" id="btn-restart" title="Recommencer l'exercice en cours">Recommencer</button>
         <button class="btn btn-danger" type="button" id="btn-stop">Terminer</button>
       </div>
     </div>
   `;
   document.body.appendChild(overlay);
+}
+
+/**
+ * Hôte des modales. Pendant la séance, l'overlay est en plein écran
+ * (`enterFullscreen`) : les éléments hors de l'élément plein écran ne sont
+ * pas rendus. On rattache donc les modales à l'élément plein écran, sinon
+ * au corps de la page.
+ */
+function modalHost() {
+  return document.fullscreenElement || document.body;
+}
+
+/** Modale de confirmation réutilisable (boutons de séance). */
+function confirmAction({ title, message, confirmLabel = 'Confirmer', confirmClass = 'btn-primary' }) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      document.getElementById('confirm-modal')?.remove();
+      resolve(value);
+    };
+
+    const modal = el('div', {
+      id: 'confirm-modal',
+      className: 'confirm-modal',
+      role: 'dialog',
+      'aria-modal': 'true',
+      'aria-label': title
+    });
+
+    modal.append(
+      el('div', { className: 'card confirm-card' }, [
+        el('h2', { className: 'card-title', text: title }),
+        el('p', { className: 'card-text', text: message }),
+        el('div', { className: 'confirm-actions' }, [
+          el('button', {
+            className: 'btn btn-secondary',
+            type: 'button',
+            text: 'Annuler',
+            onClick: () => finish(false)
+          }),
+          el('button', {
+            className: `btn ${confirmClass}`,
+            type: 'button',
+            text: confirmLabel,
+            onClick: () => finish(true)
+          })
+        ])
+      ])
+    );
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) finish(false);
+    });
+
+    modalHost().appendChild(modal);
+  });
 }
 
 function showCompletionModal(day, durationSeconds, calories) {
@@ -1324,7 +1316,7 @@ function showCompletionModal(day, durationSeconds, calories) {
     ])
   ]);
 
-  document.body.appendChild(modal);
+  modalHost().appendChild(modal);
 }
 
 function registerServiceWorker() {
@@ -1340,7 +1332,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=75');
+      const registration = await navigator.serviceWorker.register('sw.js?v=82');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

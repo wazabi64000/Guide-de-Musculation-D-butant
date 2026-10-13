@@ -58,7 +58,7 @@ function emitTone(ctx, {
  * @param {1|2|3} second — secondes restantes affichées
  * @param {'work'|'rest'} mode — exercice ou repos (timbre légèrement différent)
  */
-export function playCountdownBeep(second, { mode = 'work', volume = 0.38 } = {}) {
+export function playCountdownBeep(second, { mode = 'work', volume = 0.72 } = {}) {
   const ctx = getCtx();
   if (!ctx) return;
 
@@ -70,13 +70,12 @@ export function playCountdownBeep(second, { mode = 'work', volume = 0.38 } = {})
   const isGo = second === 1;
   const isRest = mode === 'rest';
 
-  /** Fréquences type métronome gym : montée progressive, dernier bip plus aigu. */
   const profiles = {
-    3: { freq: 494, dur: 0.11, vol: volume * 0.7 },
-    2: { freq: 622, dur: 0.11, vol: volume * 0.82 },
+    3: { freq: 494, dur: 0.13, vol: volume * 0.78 },
+    2: { freq: 622, dur: 0.13, vol: volume * 0.9 },
     1: {
       freq: isRest ? 988 : 880,
-      dur: isGo ? 0.32 : 0.14,
+      dur: isGo ? 0.36 : 0.16,
       vol: volume,
       freqEnd: isGo ? (isRest ? 1318 : 1174) : undefined
     }
@@ -99,7 +98,7 @@ export function playCountdownBeep(second, { mode = 'work', volume = 0.38 } = {})
     frequency: cfg.freq * 2,
     start: now,
     duration: cfg.dur * 0.55,
-    volume: cfg.vol * 0.12,
+    volume: cfg.vol * 0.24,
     type: 'triangle'
   });
 
@@ -108,16 +107,16 @@ export function playCountdownBeep(second, { mode = 'work', volume = 0.38 } = {})
     emitTone(ctx, {
       frequency: isRest ? 784 : 698,
       start: now + 0.14,
-      duration: 0.09,
-      volume: cfg.vol * 0.55,
+      duration: 0.1,
+      volume: cfg.vol * 0.68,
       type: 'square'
     });
     emitTone(ctx, {
       frequency: isRest ? 1174 : 1046,
       frequencyEnd: isRest ? 1568 : 1396,
       start: now + 0.24,
-      duration: 0.18,
-      volume: cfg.vol * 0.75,
+      duration: 0.22,
+      volume: cfg.vol * 0.92,
       type: 'sine'
     });
   }
@@ -145,7 +144,7 @@ export function playTripleBeep({ intervalMs = 700, signal } = {}) {
         resolve(false);
         return;
       }
-      playCountdownBeep(steps[i], { volume: 0.36 });
+      playCountdownBeep(steps[i], { volume: 0.68 });
       if (i < 2) await wait(intervalMs, signal);
     }
     await wait(150, signal);
