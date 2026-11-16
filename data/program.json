@@ -3,10 +3,10 @@
     "title": "Guide de Musculation Débutant",
     "subtitle": "Cycle 6 jours · 3 zones par muscle",
     "sessionDuration": 75,
-    "defaultSets": 3,
+    "defaultSets": 4,
     "defaultReps": 12,
     "defaultRestSeconds": 75,
-    "defaultExerciseSeconds": 45,
+    "defaultExerciseSeconds": 30,
     "caloriesPerMinute": 6.5,
     "instructions": [
       "Chaque séance : 6 à 9 exercices (les exercices de base + les zones ciblées).",
@@ -80,11 +80,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -119,34 +119,29 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
         {
           "id": "leg-press",
-          "name": "Presse à cuisses",
-          "equipmentType": "MACHINE",
+          "name": "Squats poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Quadriceps (global) · Fessiers",
-          "image": "images/leg-press.gif",
+          "image": "images/goblet-squat.gif",
           "variants": [
             {
-              "equipment": "Machine guidée",
-              "name": "Presse à cuisses",
-              "image": "images/leg-press.gif"
+              "equipment": "Poids du corps",
+              "name": "Squat",
+              "image": "images/goblet-squat.gif"
             },
             {
-              "equipment": "Machine guidée",
-              "name": "Hack squat",
-              "image": "images/hack-squat.gif"
-            },
-            {
-              "equipment": "Haltères",
-              "name": "Goblet squat",
+              "equipment": "Poids du corps",
+              "name": "Squat sumo",
               "image": "images/goblet-squat.gif"
             }
           ],
@@ -154,17 +149,18 @@
             "Quadriceps",
             "Fessiers"
           ],
-          "description": "Mouvement de base pour développer les jambes.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Squat au poids du corps pour les quadriceps et fessiers.",
+          "howTo": "Pieds largeur d'épaules, descends en contrôlant, genoux dans l'axe, remonte sans verrouiller.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "mistakes": "Genoux qui rentrent, talons qui décollent, dos arrondi.",
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
-          "kind": "polyarticulaire"
+          "kind": "polyarticulaire",
+          "weight": "Poids du corps"
         },
         {
           "id": "shoulder-press",
@@ -196,11 +192,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -234,11 +230,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "45s",
           "tempo": "Contrôlé",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 45,
           "kind": "isolation"
         },
@@ -272,11 +268,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "isolation"
         }
@@ -305,11 +301,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -338,11 +334,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -361,11 +357,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -399,11 +395,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -437,11 +433,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -475,11 +471,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -513,11 +509,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -547,11 +543,11 @@
           "howTo": "Prise neutre (paumes face à face), coudes fixes, monte sans balancer.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Épaules qui bougent, élan du buste.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
@@ -585,11 +581,11 @@
           "howTo": "Assis ou debout, un haltère tenu à deux mains derrière la tête, coudes serrés. Tends les bras sans cambrer.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Coudes qui s'écartent, dos cambré.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         }
@@ -645,11 +641,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -683,11 +679,11 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
           "kind": "polyarticulaire"
         },
@@ -716,29 +712,29 @@
           "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation"
         },
         {
           "id": "db-rdl",
-          "name": "Soulevé de terre roumain aux haltères",
-          "equipmentType": "POIDS LIBRE",
+          "name": "Charnière de hanche (RDL poids du corps)",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Ischios (chef long) · Fessiers",
           "image": "images/db-rdl.gif",
           "variants": [
             {
-              "equipment": "Haltères",
-              "name": "Soulevé de terre roumain haltères",
+              "equipment": "Poids du corps",
+              "name": "Good morning",
               "image": "images/db-rdl.gif"
             },
             {
-              "equipment": "Barre",
-              "name": "Soulevé de terre roumain barre",
+              "equipment": "Poids du corps",
+              "name": "RDL sans charge",
               "image": "images/deadlift-rdl.gif"
             }
           ],
@@ -746,39 +742,52 @@
             "Ischio-jambiers",
             "Fessiers"
           ],
-          "description": "Charnière de hanche : étire les ischios (chef long) et les fessiers.",
-          "howTo": "Haltères devant les cuisses, jambes presque tendues, pousse les hanches en arrière, dos neutre. Descends jusqu'à sentir l'étirement des ischios.",
+          "description": "Charnière de hanche au poids du corps : ischios et fessiers.",
+          "howTo": "Mains sur les hanches ou devant, pousse les hanches en arrière, dos neutre, sens l'étirement des ischios puis remonte.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Dos arrondi, jambes trop fléchies, charge trop lourde.",
-          "sets": 3,
+          "mistakes": "Dos arrondi, genoux trop fléchis, élan.",
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
-          "kind": "polyarticulaire"
+          "kind": "polyarticulaire",
+          "weight": "Poids du corps"
         },
         {
           "id": "leg-extension",
-          "name": "Leg Extension",
-          "equipmentType": "MACHINE",
+          "name": "Fentes avant poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Quadriceps (vaste médial)",
-          "image": "images/leg-extension.gif",
-          "variants": [],
+          "image": "images/db-lunge.gif",
+          "variants": [
+            {
+              "equipment": "Poids du corps",
+              "name": "Fentes avant",
+              "image": "images/db-lunge.gif"
+            },
+            {
+              "equipment": "Poids du corps",
+              "name": "Fentes marchées",
+              "image": "images/db-lunge.gif"
+            }
+          ],
           "muscles": [
             "Quadriceps"
           ],
-          "description": "Isolation des quadriceps, accent sur le vaste médial.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Fentes au poids du corps pour isoler les quadriceps.",
+          "howTo": "Fais un grand pas en avant, descends jusqu'à ce que le genou arrière approche du sol, remonte et alterne.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "mistakes": "Genou avant trop en avant, buste penché, pas trop court.",
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
-          "kind": "isolation"
+          "kind": "isolation",
+          "weight": "Poids du corps"
         },
         {
           "id": "plank",
@@ -794,10 +803,10 @@
           "howTo": "Corps aligné, gainé, regard vers le sol. Maintenez la position sans creuser le dos.",
           "breathing": "Respirez calmement et régulièrement pendant le maintien.",
           "mistakes": "Fesses trop hautes, dos creusé, apnée.",
-          "sets": 3,
+          "sets": 4,
           "reps": 1,
           "rest": "60s",
-          "tempsExercice": 40,
+          "tempsExercice": 30,
           "tempsRepos": 60,
           "kind": "isolation",
           "isHold": true
@@ -815,196 +824,203 @@
       "exercises": [
         {
           "id": "goblet-squat",
-          "name": "Goblet squat (squat haltère)",
-          "equipmentType": "POIDS LIBRE",
+          "name": "Squats poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Quadriceps (vaste latéral)",
           "image": "images/goblet-squat.gif",
           "variants": [
             {
-              "equipment": "Haltères",
-              "name": "Goblet squat",
+              "equipment": "Poids du corps",
+              "name": "Squat",
               "image": "images/goblet-squat.gif"
             },
             {
-              "equipment": "Machine guidée",
-              "name": "Hack squat",
-              "image": "images/hack-squat.gif"
-            },
-            {
-              "equipment": "Machine guidée",
-              "name": "Presse à cuisses",
-              "image": "images/leg-press.gif"
+              "equipment": "Poids du corps",
+              "name": "Squat sumo",
+              "image": "images/goblet-squat.gif"
             }
           ],
           "muscles": [
             "Quadriceps",
             "Fessiers"
           ],
-          "description": "Squat haltère : accent sur le vaste latéral et les fessiers.",
-          "howTo": "Haltère contre la poitrine, pieds largeur épaules, descends entre les jambes, genoux dans l'axe des pieds.",
+          "description": "Squat au poids du corps : vastes et fessiers.",
+          "howTo": "Pieds largeur d'épaules, descends entre les jambes, genoux dans l'axe des pieds, remonte en poussant dans les talons.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Genoux qui rentrent, dos arrondi, talons qui décollent.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
-          "kind": "polyarticulaire"
+          "kind": "polyarticulaire",
+          "weight": "Poids du corps"
         },
         {
           "id": "leg-curl",
-          "name": "Leg Curl allongé",
-          "equipmentType": "MACHINE",
+          "name": "Pont fessier (glute bridge)",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Ischios (biceps fémoral)",
-          "image": "images/leg-curl.gif",
-          "variants": [],
+          "image": "images/glute-bridge.gif",
+          "variants": [
+            {
+              "equipment": "Poids du corps",
+              "name": "Pont fessier",
+              "image": "images/glute-bridge.gif"
+            },
+            {
+              "equipment": "Poids du corps",
+              "name": "Pont une jambe",
+              "image": "images/glute-bridge.gif"
+            }
+          ],
           "muscles": [
             "Ischio-jambiers"
           ],
-          "description": "Renforcement de l'arrière des cuisses (biceps fémoral).",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Pont fessier au poids du corps : ischios et fessiers.",
+          "howTo": "Allongé, pieds au sol, pousse le bassin vers le haut, serre les fessiers en haut, redescends contrôlé.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "mistakes": "Cambrer le bas du dos, pousser sur les pointes, amplitude trop courte.",
+          "sets": 4,
           "reps": 12,
           "rest": "60s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 60,
-          "kind": "isolation"
+          "kind": "isolation",
+          "weight": "Poids du corps"
         },
         {
           "id": "hip-thrust",
-          "name": "Hip thrust",
-          "equipmentType": "POIDS LIBRE",
+          "name": "Hip thrust poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Fessiers (grand fessier)",
           "image": "images/hip-thrust.gif",
           "variants": [
             {
-              "equipment": "Haltères",
-              "name": "Hip thrust haltère",
-              "image": "images/db-hip-thrust.gif"
+              "equipment": "Poids du corps",
+              "name": "Hip thrust",
+              "image": "images/hip-thrust.gif"
+            },
+            {
+              "equipment": "Poids du corps",
+              "name": "Pont fessier",
+              "image": "images/glute-bridge.gif"
             }
           ],
           "muscles": [
             "Fessiers"
           ],
-          "description": "Extension de hanche : cible le grand fessier.",
-          "howTo": "Haut du dos appuyé, charge sur le bassin, pousse les hanches vers le haut, serre les fessiers en haut.",
+          "description": "Extension de hanche au poids du corps : grand fessier.",
+          "howTo": "Haut du dos appuyé (banc ou sol), pousse les hanches vers le haut, serre les fessiers en haut.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Cambrer le bas du dos, pousser sur les pointes.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "75s",
           "tempo": "2-0-2-0",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 75,
-          "kind": "polyarticulaire"
+          "kind": "polyarticulaire",
+          "weight": "Poids du corps"
         },
         {
           "id": "hip-abduction",
-          "name": "Abduction de hanche machine",
-          "equipmentType": "MACHINE",
+          "name": "Élévations latérales de jambe",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Fessiers (moyen fessier)",
-          "image": "images/hip-abduction.gif",
+          "image": "images/hip-abduction.webp",
           "variants": [
             {
-              "equipment": "Machine guidée",
-              "name": "Abduction machine",
-              "image": "images/hip-abduction.gif"
+              "equipment": "Poids du corps",
+              "name": "Élévation latérale",
+              "image": "images/hip-abduction.webp"
             }
           ],
           "muscles": [
             "Fessiers"
           ],
-          "description": "Écarte les jambes contre la résistance : cible le moyen fessier.",
-          "howTo": "Assis, jambes contre la résistance, ouvre lentement sans à-coups puis reviens en contrôlant.",
+          "description": "Abduction de hanche au poids du corps : moyen fessier.",
+          "howTo": "Allongé sur le côté, jambe du dessus tendue, monte et descends lentement sans basculer le bassin.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Élan, buste qui bouge, amplitude trop courte.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "45s",
           "tempo": "Contrôlé",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 45,
-          "kind": "isolation"
+          "kind": "isolation",
+          "weight": "Poids du corps"
         },
         {
           "id": "seated-calf",
-          "name": "Mollets assis",
-          "equipmentType": "MACHINE",
+          "name": "Mollets assis poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Mollets (soléaire)",
           "image": "images/seated-calf.gif",
           "variants": [
             {
-              "equipment": "Machine guidée",
+              "equipment": "Poids du corps",
               "name": "Mollets assis",
               "image": "images/seated-calf.gif"
             },
             {
-              "equipment": "Machine guidée",
+              "equipment": "Poids du corps",
               "name": "Mollets debout",
               "image": "images/standing-calf.gif"
-            },
-            {
-              "equipment": "Machine guidée",
-              "name": "Mollets à la presse",
-              "image": "images/leg-press-calf.gif"
             }
           ],
           "muscles": [
             "Mollets"
           ],
-          "description": "Mollets en position assise : cible le soléaire.",
-          "howTo": "Réglez la machine. Gardez le dos droit. Effectuez le mouvement lentement sans à-coups.",
+          "description": "Mollets assis au poids du corps (soléaire).",
+          "howTo": "Assis, pointe des pieds sur un support, monte le plus haut possible puis redescends en étirant.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
-          "mistakes": "Charge trop lourde, mouvement rapide, dos arrondi.",
-          "sets": 3,
+          "mistakes": "Amplitude courte, rebond.",
+          "sets": 4,
           "reps": 12,
           "rest": "45s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 45,
-          "kind": "isolation"
+          "kind": "isolation",
+          "weight": "Poids du corps"
         },
         {
           "id": "standing-calf",
-          "name": "Mollets debout",
-          "equipmentType": "MACHINE",
+          "name": "Mollets debout poids du corps",
+          "equipmentType": "POIDS DU CORPS",
           "target": "Mollets (gastrocnémien)",
           "image": "images/standing-calf.gif",
           "variants": [
             {
-              "equipment": "Machine guidée",
+              "equipment": "Poids du corps",
               "name": "Mollets debout",
               "image": "images/standing-calf.gif"
             },
             {
-              "equipment": "Machine guidée",
-              "name": "Mollets à la presse",
-              "image": "images/leg-press-calf.gif"
-            },
-            {
-              "equipment": "Machine guidée",
-              "name": "Mollets assis",
-              "image": "images/seated-calf.gif"
+              "equipment": "Poids du corps",
+              "name": "Mollets une jambe",
+              "image": "images/standing-calf.gif"
             }
           ],
           "muscles": [
             "Mollets"
           ],
-          "description": "Mollets debout, jambes tendues : cible le gastrocnémien.",
-          "howTo": "Debout, pointes sur la plateforme, monte le plus haut possible puis redescends lentement en étirant.",
+          "description": "Mollets debout au poids du corps (gastrocnémien).",
+          "howTo": "Debout, pointes sur une marche ou le sol, monte le plus haut possible puis redescends lentement.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Amplitude courte, rebond, genoux qui plient.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "45s",
           "tempo": "2-0-1-1",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 45,
-          "kind": "isolation"
+          "kind": "isolation",
+          "weight": "Poids du corps"
         },
         {
           "id": "russian-twist",
@@ -1037,11 +1053,11 @@
           "howTo": "Assis, buste légèrement incliné, tourne le buste d'un côté puis de l'autre en contrôlant le mouvement.",
           "breathing": "Expirez pendant l'effort, inspirez au retour.",
           "mistakes": "Tirer avec les bras, mouvement trop rapide.",
-          "sets": 3,
+          "sets": 4,
           "reps": 12,
           "rest": "45s",
           "tempo": "Contrôlé",
-          "tempsExercice": 45,
+          "tempsExercice": 30,
           "tempsRepos": 45,
           "kind": "isolation"
         }

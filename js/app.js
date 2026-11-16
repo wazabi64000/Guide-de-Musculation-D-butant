@@ -686,9 +686,17 @@ function createSessionController(day, startIndex = 0) {
       previewBadge.textContent = '';
       previewBadge.className = 'session-next-badge equipment-badge';
       const type = String(upcoming.equipmentType || '').toUpperCase();
-      const isMachine = type === 'MACHINE';
-      previewBadge.classList.add(isMachine ? 'equipment-machine' : 'equipment-free');
-      previewBadge.textContent = isMachine ? 'MACHINE' : 'POIDS LIBRE';
+      previewBadge.classList.remove('equipment-machine', 'equipment-free', 'equipment-bodyweight');
+      if (type === 'MACHINE') {
+        previewBadge.classList.add('equipment-machine');
+        previewBadge.textContent = 'MACHINE';
+      } else if (type.includes('CORPS') || type === 'BODYWEIGHT') {
+        previewBadge.classList.add('equipment-bodyweight');
+        previewBadge.textContent = 'POIDS DU CORPS';
+      } else {
+        previewBadge.classList.add('equipment-free');
+        previewBadge.textContent = 'POIDS LIBRE';
+      }
     }
     if (previewImg) {
       const path = String(upcoming.image || '').replace(/^\//, '');
@@ -698,7 +706,7 @@ function createSessionController(day, startIndex = 0) {
   }
 
   function workSeconds(ex) {
-    return Number(ex.tempsExercice ?? settings.defaultExerciseSeconds ?? 45);
+    return Number(ex.tempsExercice ?? settings.defaultExerciseSeconds ?? 30);
   }
 
   function restSeconds(ex) {
@@ -1332,7 +1340,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js?v=83');
+      const registration = await navigator.serviceWorker.register('sw.js?v=86');
       await registration.update();
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });

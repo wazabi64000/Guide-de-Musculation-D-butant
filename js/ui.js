@@ -88,13 +88,24 @@ export function variantChips(variants = []) {
   );
 }
 
-/** Badge matériel : POIDS LIBRE ou MACHINE */
+/** Badge matériel : POIDS DU CORPS, POIDS LIBRE ou MACHINE */
 export function equipmentBadge(equipmentType) {
   const type = String(equipmentType || '').toUpperCase();
-  const isMachine = type === 'MACHINE';
+  if (type === 'MACHINE') {
+    return el('span', {
+      className: 'equipment-badge equipment-machine',
+      text: 'MACHINE'
+    });
+  }
+  if (type.includes('CORPS') || type === 'BODYWEIGHT') {
+    return el('span', {
+      className: 'equipment-badge equipment-bodyweight',
+      text: 'POIDS DU CORPS'
+    });
+  }
   return el('span', {
-    className: `equipment-badge ${isMachine ? 'equipment-machine' : 'equipment-free'}`,
-    text: isMachine ? 'MACHINE' : 'POIDS LIBRE'
+    className: 'equipment-badge equipment-free',
+    text: 'POIDS LIBRE'
   });
 }
 

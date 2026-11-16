@@ -64,7 +64,7 @@ export function bindSettingsPage(root = document) {
   });
 
   exercise?.addEventListener('change', async () => {
-    await updateSetting('defaultExerciseSeconds', Number(exercise.value) || 45);
+    await updateSetting('defaultExerciseSeconds', Number(exercise.value) || 30);
   });
 
   nameInput?.addEventListener('change', async () => {
